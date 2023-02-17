@@ -11,7 +11,7 @@ Any 2x2 bit operator matrix is represented by a list of 4 `complex` floating poi
 
 Single and array "`b`" parameters represent [**Pauli operator bases**](https://en.wikipedia.org/wiki/Pauli_matrices). They are specified according to the enumeration of the [`Pauli`](https://github.com/unitaryfund/qook/blob/main/src/pauli.rs) class.
 
-`MC[x]` and `MAC[x]` methods are controlled single bit gates, with as many control qubits as you specify via Python list `c` argument. `MCX` is multiply-controlled Pauli X, and `MACX` is "anti-"controlled Pauli X, i.e. "anti-control" activates the gate if all control bits are specifically **off**, as opposed to **on**.
+`MC[x]` and `MAC[x]` methods are controlled single bit gates, with as many control qubits as you specify via the Rust vector `c` argument. `MCX` is multiply-controlled Pauli X, and `MACX` is "anti-"controlled Pauli X, i.e. "anti-control" activates the gate if all control bits are specifically **off**, as opposed to **on**.
 
 The package installation directory contains a `qrack_cl_precompile` folder with executables for supported platforms, to compile OpenCL kernels once, beforehand, avoiding the need to recompile "just-in-time" every time that you load this package in a Python interpreter. If you no longer want to use precompiled kernels, or if precompilation fails, just delete the `~/.qrack` directory, or the equivalent `.qrack` sub-directory in the user home folder of your operating system.
 
