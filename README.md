@@ -21,4 +21,4 @@ The API is meant to exactly mirror (Python-based) PyQrack. See [https://pyqrack.
 
 Please feel welcome to open an issue, if you'd like help. 😃
 
-**From their work on PyQrack, Special thanks go to Zeeshan Ahmed, for bug fixes and design suggestions, Ashish Panigrahi, for documentation and design suggestions, WingCode, for documentation, and to the broader community of Qrack contributors, for years of happy Qracking! You rock!**
+**For their work on PyQrack, special thanks go to Zeeshan Ahmed, for bug fixes and design suggestions, Ashish Panigrahi, for documentation and design suggestions, WingCode, for documentation, and to the broader community of Qrack contributors, for years of happy Qracking! You rock!**
