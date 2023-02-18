@@ -16,6 +16,7 @@ pub const FPPOW: u32 = 5;
 pub const PSTRIDEPOW: u32 = 11;
 pub const QBCAPPOW: u32 = 6;
 pub const UINTPOW: u32 = 6;
+#[allow(non_camel_case_types)]
 pub type size_t = ::std::os::raw::c_ulong;
 #[repr(C)]
 #[repr(align(16))]
@@ -62,6 +63,7 @@ fn bindgen_test_layout_max_align_t() {
         )
     );
 }
+#[allow(non_camel_case_types)]
 pub type uintq = ::std::os::raw::c_ulonglong;
 pub type IdCallback = ::std::option::Option<unsafe extern "C" fn(arg1: uintq)>;
 pub type ProbAmpCallback =
