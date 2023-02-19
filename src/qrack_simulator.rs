@@ -334,7 +334,7 @@ impl QrackSimulator {
         self.check_error()
     }
 
-    pub fn mtrx(&self, m: &[f64;4], q: u64) -> Result<(), QrackError> {
+    pub fn mtrx(&self, m: &[f64;8], q: u64) -> Result<(), QrackError> {
         // Operation from matrix.
         //
         // Applies arbitrary operation defined by the given matrix.
@@ -346,7 +346,7 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        let mut a = [m[0], m[1], m[2], m[3]];
+        let mut a = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
         unsafe {
             qrack_system::bindings::Mtrx(self.sid, a.as_mut_ptr(), q);
         }
