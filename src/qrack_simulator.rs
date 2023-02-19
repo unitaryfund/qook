@@ -2099,131 +2099,71 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::Dispose(self.sid, _q.len() as u64, _q.as_mut_ptr())
+            qrack_system::bindings::Dispose(self.sid, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
+
+    pub fn in_ket(&self, ket: *mut f32) -> Result<(), QrackError> {
+        // Set state vector
+        //
+        // Set state vector for the selected simulator ID.
+        // Warning: State vector is not always the internal representation leading
+        // to sub-optimal performance of the method.
+        //
+        // Args:
+        //     ket: the state vector to which simulator will be set
+        //
+        // Raises:
+        //     RuntimeError: Not implemented for the given builds.
+
+        unsafe {
+            qrack_system::bindings::InKet(self.sid, ket);
+        }
+        self.check_error()
+    }
+
+    pub fn out_ket(self, ket: *mut f32) -> Result<(), QrackError> {
+        // Get state vector
+        //
+        // Returns the raw state vector of the simulator.
+        // Warning: State vector is not always the internal representation leading
+        // to sub-optimal performance of the method.
+        //
+        // Raises:
+        //     RuntimeError: Not implemented for the given builds.
+
+        unsafe {
+            qrack_system::bindings::OutKet(self.sid, ket);
+        }
+        self.check_error()
+    }
+
+    pub fn prob(&self, q: u64) -> Result<f64, QrackError> {
+        // Probability of `|1>`
+        //
+        // Get the probability that a qubit is in the `|1>` state.
+        //
+        // Args:
+        //     q: qubit id
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     probability of qubit being in `|1>`
+
+        let result:f64;
+        unsafe {
+            result = qrack_system::bindings::Prob(self.sid, q);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
 }
 /*
-    ## miscellaneous
-    def dump_ids(self):
-        """Dump all IDs
-
-        Dump all IDs from the selected simulator ID into the callback.
-
-        Returns:
-            List of ids
-        """
-        global ids_list
-        global ids_list_index
-        ids_list = [0] * self._qubit_count
-        ids_list_index = 0
-        Qrack.qrack_lib.DumpIds(self.sid, self.dump_ids_callback)
-        return ids_list
-
-    @ctypes.CFUNCTYPE(None, ctypes.c_ulonglong)
-    def dump_ids_callback(i):
-        """C callback function"""
-        global ids_list
-        global ids_list_index
-        ids_list[ids_list_index] = i
-        ids_list_index = ids_list_index + 1
-
-    def dump(self):
-        """Dump state vector
-
-        Dump state vector from the selected simulator ID into the callback.
-
-        Returns:
-            State vector list
-        """
-        global state_vec_list
-        global state_vec_list_index
-        global state_vec_probability
-        state_vec_list = [complex(0, 0)] * (1 << self._qubit_count)
-        state_vec_list_index = 0
-        state_vec_probability = 0
-        Qrack.qrack_lib.Dump(self.sid, self.dump_callback)
-        return state_vec_list
-
-    @ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_double, ctypes.c_double)
-    def dump_callback(r, i):
-        """C callback function"""
-        global state_vec_list
-        global state_vec_list_index
-        global state_vec_probability
-        state_vec_list[state_vec_list_index] = complex(r, i)
-        state_vec_list_index = state_vec_list_index + 1
-        state_vec_probability = state_vec_probability + (r * r) + (i * i)
-        if (1.0 - state_vec_probability) <= (7.0 / 3 - 4.0 / 3 - 1):
-            return False
-        return True
-
-    def in_ket(self, ket):
-        """Set state vector
-
-        Set state vector for the selected simulator ID. 
-        Warning: State vector is not always the internal representation leading 
-        to sub-optimal performance of the method.
-
-        Args:
-            ket: the state vector to which simulator will be set
-
-        Raises:
-            RuntimeError: Not implemented for the given builds.
-        """
-        if Qrack.fppow == 5 or Qrack.fppow == 6:
-            Qrack.qrack_lib.InKet(self.sid, self._qrack_complex_byref(ket))
-            if self._get_error() != 0:
-                raise RuntimeError("QrackSimulator C++ library raised exception.")
-        else:
-            raise NotImplementedError(
-                "QrackSimulator.in_ket() not implemented for builds beside float/fp32 and double/fp64, but it can be overloaded."
-            )
-
-    def out_ket(self):
-        """Set state vector
-
-        Returns the raw state vector of the simulator.
-        Warning: State vector is not always the internal representation leading 
-        to sub-optimal performance of the method.
-
-        Raises:
-            RuntimeError: Not implemented for the given builds.
-
-        Returns:
-            list representing the state vector.
-        """
-        if Qrack.fppow == 5 or Qrack.fppow == 6:
-            amp_count = 1 << self._qubit_count
-            ket = self._qrack_complex_byref([complex(0, 0)] * amp_count)
-            Qrack.qrack_lib.OutKet(self.sid, ket)
-            if self._get_error() != 0:
-                raise RuntimeError("QrackSimulator C++ library raised exception.")
-            return [complex(r, i) for r, i in self._pairwise(ket)]
-        raise NotImplementedError(
-            "QrackSimulator.out_ket() not implemented for builds beside float/fp32 and double/fp64, but it can be overloaded."
-        )
-
-    def prob(self, q):
-        """Probability of `|1>`
-
-        Get the probability that a qubit is in the `|1>` state.
-
-        Args:
-            q: qubit id
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            probability of qubit being in `|1>`
-        """
-        result = Qrack.qrack_lib.Prob(self.sid, q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
     def permutation_expectation(self, c):
         """Permutation expectation value
 
