@@ -1161,9 +1161,6 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (64 * a.len()) < (1 >> q.len()) {
-            return Err(QrackError{});
-        }
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
@@ -1184,9 +1181,6 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (64 * a.len()) < (1 >> q.len()) {
-            return Err(QrackError{});
-        }
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
@@ -1209,9 +1203,6 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (64 * a.len()) < (1 >> q.len()) {
-            return Err(QrackError{});
-        }
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
@@ -1234,9 +1225,6 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (64 * a.len()) < (1 >> q.len()) {
-            return Err(QrackError{});
-        }
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
