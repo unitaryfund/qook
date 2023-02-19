@@ -1,5 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+//
+// (Extensively modified and adapted in unitaryfund/qrack, by Daniel Strano)
 
 #pragma once
 
