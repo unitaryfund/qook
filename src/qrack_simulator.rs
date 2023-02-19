@@ -110,49 +110,6 @@ impl QrackSimulator {
         return Ok(Self{ qubit_count, sid });
     }
 
-/*
-    def _ulonglong_byref(self, a):
-        return (ctypes.c_ulonglong * len(a))(*a)
-
-    def _double_byref(self, a):
-        return (ctypes.c_double * len(a))(*a)
-
-    def _complex_byref(self, a):
-        t = [(c.real, c.imag) for c in a]
-        return self._double_byref([float(item) for sublist in t for item in sublist])
-
-    def _real1_byref(self, a):
-        # This needs to be c_double, if PyQrack is built with fp64.
-        if Qrack.fppow < 6:
-            return (ctypes.c_float * len(a))(*a)
-        return (ctypes.c_double * len(a))(*a)
-
-    def _qrack_complex_byref(self, a):
-        t = [(c.real, c.imag) for c in a]
-        return self._real1_byref([float(item) for sublist in t for item in sublist])
-
-    def _to_ubyte(self, nv, v):
-        c = math.floor((nv - 1) / 8) + 1
-        b = (ctypes.c_ubyte * (c * (1 << nv)))()
-        n = 0
-        for u in v:
-            for _ in range(c):
-                b[n] = u & 0xFF
-                u >>= 8
-                n += 1
-
-        return ctypes.byref(b)
-
-    # See https://stackoverflow.com/questions/5389507/iterating-over-every-two-elements-in-a-list#answer-30426000
-    def _pairwise(self, it):
-        it = iter(it)
-        while True:
-            try:
-                yield next(it), next(it)
-            except StopIteration:
-                # no more elements in the iterator
-                return
-*/
     // non-quantum
     pub fn seed(&self, s: u64) -> Result<(), QrackError> {
         unsafe {
@@ -804,28 +761,30 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn multiplex1_mtrx(&self, c: Vec<u64>, q: u64, m: Vec<f64>) -> Result<(), QrackError> {
+        // Multiplex gate
+        //
+        // A multiplex gate with a single target and an arbitrary number of
+        // controls.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //     m(Vec<u64>): row-major complex matrix which defines the operator.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        let mut _m = m.to_vec();
+        unsafe {
+            qrack_system::bindings::Multiplex1Mtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, _m.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def multiplex1_mtrx(self, c, q, m):
-        """Multiplex gate
-
-        A multiplex gate with a single target and an arbitrary number of
-        controls.
-
-        Args:
-            c: list of controlled qubits.
-            m: row-major complex matrix which defines the operator.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.Multiplex1Mtrx(
-            self.sid, len(c), self._ulonglong_byref(c), q, self._complex_byref(m)
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def mx(self, q):
         """Multi X-gate
 
