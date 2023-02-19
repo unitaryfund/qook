@@ -600,191 +600,212 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn macx(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled X gate
+        //
+        // If all controlled qubits are `|0>` then the target qubit is flipped.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn macy(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled Y gate
+        //
+        // If all controlled qubits are `|0>` then the Pauli "Y" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn macz(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled Z gate
+        //
+        // If all controlled qubits are `|0>` then the Pauli "Z" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn mach(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled H gate
+        //
+        // If all controlled qubits are `|0>` then the Hadarmard gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn macs(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled S gate
+        //
+        // If all controlled qubits are `|0>` then the "S" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn mact(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled T gate
+        //
+        // If all controlled qubits are `|0>` then the "T" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn macadjs(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled adjs gate
+        //
+        // If all controlled qubits are `|0>` then the adjs gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn macadjt(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled adjt gate
+        //
+        // If all controlled qubits are `|0>` then the adjt gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACAdjT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn macu(&self, c: Vec<u64>, q: u64, th: f64, ph: f64, la: f64) -> Result<(), QrackError> {
+        // Anti multi-controlled arbitraty unitary
+        //
+        // If all controlled qubits are `|0>` then the unitary gate described by
+        // parameters is applied to the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //     th(f64): theta
+        //     ph(f64): phi
+        //     la(f64): lambda
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACU(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, th, ph, la);
+        }
+        self.check_error()
+    }
+
+    pub fn macmtrx(&self, c: Vec<u64>, m: &[f64;8], q: u64) -> Result<(), QrackError> {
+        // Anti multi-controlled arbitraty operator
+        //
+        // If all controlled qubits are `|0>` then the arbitrary operation by
+        // parameters is applied to the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits
+        //     m(&[f64;8]): row-major complex list representing the operator.
+        //     q(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MACMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
 }
 /*
-    def macx(self, c, q):
-        """Anti multi-controlled X gate
-
-        If all controlled qubits are `|0>` then the target qubit is flipped.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACX(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macy(self, c, q):
-        """Anti multi-controlled Y gate
-
-        If all controlled qubits are `|0>` then the Pauli "Y" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACY(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macz(self, c, q):
-        """Anti multi-controlled Z gate
-
-        If all controlled qubits are `|0>` then the Pauli "Z" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACZ(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mach(self, c, q):
-        """Anti multi-controlled H gate
-
-        If all controlled qubits are `|0>` then the Hadarmard gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACH(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macs(self, c, q):
-        """Anti multi-controlled S gate
-
-        If all controlled qubits are `|0>` then the "S" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACS(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mact(self, c, q):
-        """Anti multi-controlled T gate
-
-        If all controlled qubits are `|0>` then the "T" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACT(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macadjs(self, c, q):
-        """Anti multi-controlled adjs gate
-
-        If all controlled qubits are `|0>` then the adjs gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACAdjS(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macadjt(self, c, q):
-        """Anti multi-controlled adjt gate
-
-        If all controlled qubits are `|0>` then the adjt gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACAdjT(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macu(self, c, q, th, ph, la):
-        """Anti multi-controlled arbitraty unitary
-
-        If all controlled qubits are `|0>` then the unitary gate described by
-        parameters is applied to the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-            th: theta
-            ph: phi
-            la: lambda
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACU(
-            self.sid,
-            len(c),
-            self._ulonglong_byref(c),
-            q,
-            ctypes.c_double(th),
-            ctypes.c_double(ph),
-            ctypes.c_double(la),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def macmtrx(self, c, m, q):
-        """Anti multi-controlled arbitraty operator
-
-        If all controlled qubits are `|0>` then the arbitrary operation by
-        parameters is applied to the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            m: row-major complex matrix which defines the operator.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MACMtrx(
-            self.sid, len(c), self._ulonglong_byref(c), self._complex_byref(m), q
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def multiplex1_mtrx(self, c, q, m):
         """Multiplex gate
 
