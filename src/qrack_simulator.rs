@@ -1381,220 +1381,217 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn mcadd(&self, a: Vec<u64>, c: Vec<u64>, q: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-add
+        //
+        // Adds the given integer to the given set of qubits if all controlled
+        // qubits are `|1>`.
+        //
+        // Args:
+        //     a(Vec<u64>): number to add (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(Vec<u64>): list of qubits to add the number
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::MCADD(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcsub(&self, a: Vec<u64>, c: Vec<u64>, q: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-subtract
+        //
+        // Subtracts the given integer from the given set of qubits if all controlled
+        // qubits are `|1>`.
+        //
+        // Args:
+        //     a(Vec<u64>): number to subtract (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(Vec<u64>): list of qubits to add the number
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::MCSUB(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcmul(&self, a: Vec<u64>, c: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-multiply
+        //
+        // Multiplies the given integer to the given set of qubits if all controlled
+        // qubits are `|1>`.
+        // Carry register is required for maintaining the unitary nature of
+        // operation and must be as long as the input qubit register.
+        //
+        // Args:
+        //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of control qubits
+        //     q(Vec<u64>): list of qubits to multiply the number
+        //     o(Vec<u64>): carry register
+        //
+        // Raises:
+        //    RuntimeError: QrackSimulator raised an exception.
+
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MCMUL(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcdiv(&self, a: Vec<u64>, c: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-divide.
+        //
+        // 'Divides' the given qubits by the integer if all controlled
+        // qubits are `|1>`.
+        // Carry register is required for maintaining the unitary nature of
+        // operation.
+        //
+        // Args:
+        //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of control qubits
+        //     q(Vec<u64>): list of qubits to multiply the number
+        //     o(Vec<u64>): carry register
+        //
+        // Raises:
+        //    RuntimeError: QrackSimulator raised an exception.
+
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MCDIV(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcmuln(&self, a: Vec<u64>, c: Vec<u64>, m: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-modulo multiplication
+        //
+        // Modulo Multiplication of the given integer to the given set of qubits
+        // if all controlled qubits are `|1>`
+        // Out-of-place register is required to store the resultant.
+        //
+        // Args:
+        //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of control qubits
+        //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to multiply the number
+        //     o(Vec<u64>): result register
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _m = m.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MCMULN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcdivn(&self, a: Vec<u64>, c: Vec<u64>, m: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-modulo multiplication
+        //
+        // Modulo division of the given integer to the given set of qubits
+        // if all controlled qubits are `|1>`
+        // Carry register is required for maintaining the unitary nature of
+        // operation.
+        //
+        // Args:
+        //     a(Vec<u64>): number by which to divide (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of control qubits
+        //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to divide
+        //     o(Vec<u64>): result register
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _m = m.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MCDIVN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcpown(&self, a: Vec<u64>, c: Vec<u64>, m: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Controlled-modulo Power
+        //
+        // Raises the qubit to the power `a` to which `mod m` is applied to if
+        // all the controlled qubits are set to `|1>`.
+        // Out-of-place register is required to store the resultant.
+        //
+        // Args:
+        //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
+        //     c(Vec<u64>): list of control qubits
+        //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to multiply the number
+        //     o(Vec<u64>): result register
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _c = c.to_vec();
+        let mut _m = m.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MCPOWN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def mcadd(self, a, c, q):
-        """Controlled-add
-
-        Adds the given integer to the given set of qubits if all controlled
-        qubits are `|1>`.
-
-        Args:
-            a: number to add.
-            c: list of controlled qubits.
-            q: list of qubits to add the number
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.MCADD(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcsub(self, a, c, q):
-        """Controlled-subtract
-
-        Subtracts the given integer to the given set of qubits if all controlled
-        qubits are `|1>`.
-
-        Args:
-            a: number to subtract.
-            c: list of controlled qubits.
-            q: list of qubits to add the number
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.MCSUB(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcmul(self, a, c, q, o):
-        """Controlled-multiply
-
-        Multiplies the given integer to the given set of qubits if all controlled
-        qubits are `|1>`.
-        Out-of-place register is required to store the resultant.
-
-        Args:
-            a: number to multiply
-            c: list of controlled qubits.
-            q: list of qubits to add the number
-            o: carry register
-            o: out-of-place register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.MCMUL(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcdiv(self, a, c, q, o):
-        """Controlled-divide.
-
-        'Divides' the given qubits by the integer if all controlled
-        qubits are `|1>`.
-        Carry register is required for maintaining the unitary nature of
-        operation. 
-
-        Args:
-            a: number to divide by
-            c: list of controlled qubits.
-            q: qubits to divide
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.MCDIV(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcmuln(self, a, c, m, q, o):
-        """Controlled-modulo multiplication
-
-        Modulo multiplication of the given integer to the given set of qubits
-        if all controlled qubits are `|1>`.
-        Carry register is required for maintaining the unitary nature of
-        operation. 
-
-        Args:
-            a: number to multiply
-            c: list of controlled qubits.
-            m: modulo number
-            q: list of qubits to add the number
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts, mParts = self._split_longs_2(a, m)
-        Qrack.qrack_lib.MCMULN(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            self._ulonglong_byref(mParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcdivn(self, a, c, m, q, o):
-        """Controlled-divide.
-
-        Modulo division of the given qubits by the given number if all
-        controlled qubits are `|1>`.
-        Carry register is required for maintaining the unitary nature of
-        operation. 
-
-        Args:
-            a: number to divide by
-            c: list of controlled qubits.
-            m: modulo number
-            q: qubits to divide
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts, mParts = self._split_longs_2(a, m)
-        Qrack.qrack_lib.MCDIVN(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            self._ulonglong_byref(mParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcpown(self, a, c, m, q, o):
-        """Controlled-modulo Power
-
-        Raises the qubit to the power `a` to which `mod m` is applied to if
-        all the controlled qubits are set to `|1>`.
-        Out-of-place register is required to store the resultant.
-
-        Args:
-            a: number in power
-            c: control qubits
-            m: modulo number
-            q: list of qubits to exponentiate
-            o: out-of-place register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts, mParts = self._split_longs_2(a, m)
-        Qrack.qrack_lib.MCPOWN(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(c),
-            self._ulonglong_byref(c),
-            self._ulonglong_byref(mParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def lda(self, qi, qv, t):
         """Load Accumalator
 
