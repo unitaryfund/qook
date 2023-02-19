@@ -9,6 +9,6 @@ pub struct QrackError;
 
 impl std::fmt::Display for QrackError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Qrack C++ library raised exception")
+        write!(f, "QrackSimulator C++ library raised exception.")
     }
 }
