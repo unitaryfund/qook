@@ -1292,8 +1292,7 @@ impl QrackSimulator {
         // Modulo Multiplication
         //
         // Modulo Multiplication of the given integer to the given set of qubits
-        // Carry register is required for maintaining the unitary nature of
-        // operation.
+        // Out-of-place register is required to store the resultant.
         //
         // Args:
         //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
@@ -1325,8 +1324,7 @@ impl QrackSimulator {
         //
         // 'Modulo Division' of the given set of qubits by the given integer
         // (Specifically, this is rather the adjoint of "muln().")
-        // Carry register is required for maintaining the unitary nature of
-        // operation.
+        // Out-of-place register is required to store the resultant.
         //
         // Args:
         //     a(Vec<u64>): number by which to divide (as u64 words, low-to-high)
