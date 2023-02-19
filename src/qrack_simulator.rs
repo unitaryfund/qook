@@ -371,8 +371,7 @@ impl QrackSimulator {
         }
         self.check_error()
     }
-}
-/*
+
     // Not supported, for now
     // pub fn exp(&self, b: &[Pauli], ph: &[f64], q: &[u64]) -> Result<(), QrackError> {
         // Arbitrary exponentiation
@@ -403,7 +402,7 @@ impl QrackSimulator {
 
     // multi-qubit gates
 
-    pub fn mcx(&self, c: &[u64], q: u64) -> Result<(), QrackError> {
+    pub fn mcx(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
         // Multi-controlled X gate
         //
         // If all controlled qubits are `|1>` then the target qubit is flipped.
@@ -415,16 +414,14 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
+        let mut a = c.to_vec();
         unsafe {
-            let mut a:[u64; c.len()];
-            for i in 0..c.len() {
-                a[i] = c[i]
-            }
             qrack_system::bindings::MCX(self.sid, a.len() as u64, a.as_mut_ptr(), q)
         }
         self.check_error()
     }
-
+}
+/*
     def mcy(self, c, q):
         """Multi-controlled Y gate
 
