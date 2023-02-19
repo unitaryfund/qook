@@ -221,7 +221,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::Y(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::bindings::Z(self.sid, q as qrack_system::bindings::uintq);
         }
         self.check_error()
     }
@@ -495,25 +495,28 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn mct(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled T gate
+        //
+        // If all controlled qubits are `|1>` then the "T" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c: list of controlled qubits.
+        //     q: target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+        }
+        self.check_error()
+    }
 }
 /*
-    def mct(self, c, q):
-        """Multi-controlled T gate
-
-        If all controlled qubits are `|1>` then the "T" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCT(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def mcadjs(self, c, q):
         """Multi-controlled adjs gate
 
