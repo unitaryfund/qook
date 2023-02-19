@@ -1601,7 +1601,7 @@ impl QrackSimulator {
         // Args:
         //     qi(Vec<u64>): qubit register for index
         //     qv(Vec<u64>): qubit register for value
-        //     t(Vec<u8>): list of values
+        //     t(Vec<u8>): list of values (in minimum u8 footprint per value)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -1627,7 +1627,7 @@ impl QrackSimulator {
         //     s(u64): carry qubit index
         //     qi(Vec<u64>): qubit register for index
         //     qv(Vec<u64>): qubit register for value
-        //     t(Vec<u8>): list of values
+        //     t(Vec<u8>): list of values (in minimum u8 footprint per value)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -1653,7 +1653,7 @@ impl QrackSimulator {
         //     s(u64): carry qubit index
         //     qi(Vec<u64>): qubit register for index
         //     qv(Vec<u64>): qubit register for value
-        //     t(Vec<u8>): list of values
+        //     t(Vec<u8>): list of values (in minimum u8 footprint per value)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -1679,7 +1679,7 @@ impl QrackSimulator {
         //
         // Args:
         //     q(Vec<u64>): qubit register for value
-        //     t(Vec<u8>): list of values
+        //     t(Vec<u8>): list of values (in minimum u8 footprint per value)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
