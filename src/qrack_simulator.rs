@@ -2112,7 +2112,7 @@ impl QrackSimulator {
         // to sub-optimal performance of the method.
         //
         // Args:
-        //     ket: the state vector to which simulator will be set
+        //     ket(*mut f32): the state vector to which simulator will be set
         //
         // Raises:
         //     RuntimeError: Not implemented for the given builds.
@@ -2130,6 +2130,9 @@ impl QrackSimulator {
         // Warning: State vector is not always the internal representation leading
         // to sub-optimal performance of the method.
         //
+        // Args:
+        //     ket(*mut f32): the state vector to which simulator will be output
+        //
         // Raises:
         //     RuntimeError: Not implemented for the given builds.
 
@@ -2145,7 +2148,7 @@ impl QrackSimulator {
         // Get the probability that a qubit is in the `|1>` state.
         //
         // Args:
-        //     q: qubit id
+        //     q(u64): qubit id
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2162,164 +2165,193 @@ impl QrackSimulator {
         }
         Ok(result)
     }
+
+    pub fn permutation_expectation(&self, c: Vec<u64>) -> Result<f64, QrackError> {
+        // Permutation expectation value
+        //
+        // Get the permutation expectation value, based upon the order of
+        // input qubits.
+        //
+        // Args:
+        //     c(Vec<u64>): permutation (as u64 words, low-to-high)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        let mut _c = c.to_vec();
+        let result:f64;
+        unsafe {
+            result = qrack_system::bindings::PermutationExpectation(self.sid, _c.len() as u64, _c.as_mut_ptr());
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn joint_ensemble_probability(&self, b: Vec<Pauli>, q: Vec<u64>) -> Result<f64, QrackError> {
+        // Ensemble probability
+        //
+        // Find the joint probability for all specified qubits under the
+        // respective Pauli basis transformations.
+        //
+        // Args:
+        //     b(Pauli): pauli basis
+        //     q(Vec<u64>): specified qubits
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        if b.len() != q.len() {
+            return Err(QrackError{});
+        }
+        let mut _b = b.to_vec();
+        let mut _q = q.to_vec();
+        let result:f64;
+        unsafe {
+            result = qrack_system::bindings::JointEnsembleProbability(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, _q.as_mut_ptr());
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn phase_parity(&self, la: f64, q: Vec<u64>) -> Result<(), QrackError> {
+        // Phase to odd parity
+        //
+        // Applies `e^(i*la)` phase factor to all combinations of bits with
+        // odd parity, based upon permutations of qubits.
+        //
+        // Args:
+        //     la(f64): phase
+        //     q(Vec<u64>): specified qubits
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::PhaseParity(self.sid, la, _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn try_separate_1qb(&self, qi1: u64) -> Result<bool, QrackError> {
+        // Manual seperation
+        //
+        // Exposes manual control for schmidt decomposition which attempts to
+        // decompose the qubit with possible performance improvement
+        //
+        // Args:
+        //     qi1(u64): qubit to be decomposed
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Success/failure of separation attempt
+
+        let result:bool;
+        unsafe {
+            result = qrack_system::bindings::TrySeparate1Qb(self.sid, qi1);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn try_separate_2qb(&self, qi1: u64, qi2: u64) -> Result<bool, QrackError> {
+        // Manual two-qubits seperation
+        //
+        // two-qubits counterpart of `try_separate_1qb`.
+        //
+        // Args:
+        //     qi1(u64): qubit 1 in subsystem to be decomposed
+        //     qi2(u64): qubit 2 in subsystem to be decomposed
+        //
+        // Raises:
+        //     Runtimeerror: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Success/failure of separation attempt
+
+        let result:bool;
+        unsafe {
+            result = qrack_system::bindings::TrySeparate2Qb(self.sid, qi1, qi2);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn try_separate_tolerance(&self, qs: Vec<u64>, t: f64) -> Result<bool, QrackError> {
+        // Manual multi-qubits seperation
+        //
+        // Multi-qubits counterpart of `try_separate_1qb`.
+        //
+        // Args:
+        //     qs: list of qubits to be decomposed
+        //     t: allowed Schmidt decomposition rounding parameter (SDRP) tolerance
+        //
+        // Raises:
+        //     Runtimeerror: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Success/failure of separation attempt
+
+        let mut _qs = qs.to_vec();
+        let result:bool;
+        unsafe {
+            result = qrack_system::bindings::TrySeparateTol(self.sid, _qs.len() as u64, _qs.as_mut_ptr(), t);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn set_reactive_separate(&self, irs: bool) -> Result<(), QrackError> {
+        // Set reactive separation option
+        //
+        // If reactive separation is available, then this method turns it off/on.
+        // Note that reactive separation is on by default.
+        //
+        // Args:
+        //     irs(bool): on/off for aggressive separation
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::SetReactiveSeparate(self.sid, irs);
+        }
+        self.check_error()
+    }
+
+    pub fn set_t_injection(self, iti: bool) -> Result<(), QrackError> {
+        // Set t-injection option
+        //
+        // If t-injection is available, then this method turns it off/on.
+        // Note that t-injection is on by default.
+        //
+        // Args:
+        //     iti(bool): on/off for "reverse t-injection gadget"
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::SetTInjection(self.sid, iti);
+        }
+        self.check_error()
+    }
 }
-/*
-    def permutation_expectation(self, c):
-        """Permutation expectation value
-
-        Get the permutation expectation value, based upon the order of
-        input qubits.
-
-        Args:
-            c: permutation
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Expectation value
-        """
-        result = Qrack.qrack_lib.PermutationExpectation(
-            self.sid, len(c), self._ulonglong_byref(c)
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def joint_ensemble_probability(self, b, q):
-        """Ensemble probability
-
-        Find the joint probability for all specified qubits under the
-        respective Pauli basis transformations.
-
-        Args:
-            b: pauli basis
-            q: specified qubits
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Expectation value
-        """
-        result = Qrack.qrack_lib.JointEnsembleProbability(
-            self.sid, len(b), self._ulonglong_byref(b), q
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def phase_parity(self, la, q):
-        """Phase to odd parity
-
-        Applies `e^(i*la)` phase factor to all combinations of bits with
-        odd parity, based upon permutations of qubits.
-
-        Args:
-            la: phase
-            q: specified qubits
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.PhaseParity(
-            self.sid, ctypes.c_double(la), len(q), self._ulonglong_byref(q)
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def try_separate_1qb(self, qi1):
-        """Manual seperation
-
-        Exposes manual control for schmidt decomposition which attempts to
-        decompose the qubit with possible performance improvement
-
-        Args:
-            qi1: qubit to be decomposed
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            State of the qubit.
-        """
-        result = Qrack.qrack_lib.TrySeparate1Qb(self.sid, qi1)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def try_separate_2qb(self, qi1, qi2):
-        """Manual two-qubits seperation
-
-        two-qubits counterpart of `try_separate_1qb`.
-
-        Args:
-            qi1: first qubit to be decomposed
-            qi2: second qubit to be decomposed
-
-        Raises:
-            Runtimeerror: QrackSimulator raised an exception.
-
-        Returns:
-            State of both the qubits.
-        """
-        result = Qrack.qrack_lib.TrySeparate2Qb(self.sid, qi1, qi2)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def try_separate_tolerance(self, qs, t):
-        """Manual multi-qubits seperation
-
-        Multi-qubits counterpart of `try_separate_1qb`.
-
-        Args:
-            qs: list of qubits to be decomposed
-            t: allowed tolerance
-
-        Raises:
-            Runtimeerror: QrackSimulator raised an exception.
-
-        Returns:
-            State of all the qubits.
-        """
-        result = Qrack.qrack_lib.TrySeparateTol(
-            self.sid, len(qs), self._ulonglong_byref(qs), t
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def set_reactive_separate(self, irs):
-        """Set reactive separation option
-
-        If reactive separation is available, then this method turns it off/on.
-        Note that reactive separation is on by default.
-
-        Args:
-            irs: is aggresively separable
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.SetReactiveSeparate(self.sid, irs)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def set_t_injection(self, iti):
-        """Set t-injection option
-
-        If t-injection is available, then this method turns it off/on.
-        Note that t-injection is on by default.
-
-        Args:
-            iti: use "reverse t-injection gadget"
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.SetTInjection(self.sid, iti)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-*/
-
