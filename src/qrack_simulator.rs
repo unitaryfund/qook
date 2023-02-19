@@ -1590,107 +1590,112 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn lda(&self, qi: Vec<u64>, qv: Vec<u64>, t: Vec<u8>) -> Result<(), QrackError> {
+        // Load Accumalator
+        //
+        // Quantum counterpart for LDA from MOS-6502 assembly. `t` must be of
+        // the length `(1 << qi.len()) * qv.len() / 8`. It loads each list entry index of t into
+        // the qi register and each list entry value into the qv register.
+        //
+        // Args:
+        //     qi(Vec<u64>): qubit register for index
+        //     qv(Vec<u64>): qubit register for value
+        //     t(Vec<u8>): list of values
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * t.len()) != ((1 << qi.len()) * qv.len()) {
+            return Err(QrackError{});
+        }
+        let mut _qi = qi.to_vec();
+        let mut _qv = qv.to_vec();
+        let mut _t = t.to_vec();
+        unsafe {
+            qrack_system::bindings::LDA(self.sid, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn adc(&self, s: u64, qi: Vec<u64>, qv: Vec<u64>, t: Vec<u8>) -> Result<(), QrackError> {
+        // Add with Carry
+        //
+        // Quantum counterpart for ADC from MOS-6502 assembly. `t` must be of
+        // the length `(1 << qi.len()) * qv.len() / 8`.
+        // Args:
+        //     s(u64): carry qubit index
+        //     qi(Vec<u64>): qubit register for index
+        //     qv(Vec<u64>): qubit register for value
+        //     t(Vec<u8>): list of values
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * t.len()) != ((1 << qi.len()) * qv.len()) {
+            return Err(QrackError{});
+        }
+        let mut _qi = qi.to_vec();
+        let mut _qv = qv.to_vec();
+        let mut _t = t.to_vec();
+        unsafe {
+            qrack_system::bindings::ADC(self.sid, s, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn sbc(&self, s: u64, qi: Vec<u64>, qv: Vec<u64>, t: Vec<u8>) -> Result<(), QrackError> {
+        // Subtract with Carry
+        //
+        // Quantum counterpart for SBC from MOS-6502 assembly. `t` must be of
+        // the length `(1 << qi.len()) * qv.len() / 8`.
+        // Args:
+        //     s(u64): carry qubit index
+        //     qi(Vec<u64>): qubit register for index
+        //     qv(Vec<u64>): qubit register for value
+        //     t(Vec<u8>): list of values
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * t.len()) != ((1 << qi.len()) * qv.len()) {
+            return Err(QrackError{});
+        }
+        let mut _qi = qi.to_vec();
+        let mut _qv = qv.to_vec();
+        let mut _t = t.to_vec();
+        unsafe {
+            qrack_system::bindings::SBC(self.sid, s, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn hash(&self, q: Vec<u64>, t: Vec<u8>) -> Result<(), QrackError> {
+        // Hash function
+        //
+        // Replicates the behaviour of LDA without the index register.
+        // For the operation to be unitary, the entries present in `t` must be
+        // unique, and the length of `(1 << q.len()) / 8`.
+        //
+        // Args:
+        //     q(Vec<u64>): qubit register for value
+        //     t(Vec<u8>): list of values
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * t.len()) != (1 << q.len()) {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _t = t.to_vec();
+        unsafe {
+            qrack_system::bindings::Hash(self.sid, _q.len() as u64, _q.as_mut_ptr(), _t.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def lda(self, qi, qv, t):
-        """Load Accumalator
-
-        Quantum counterpart for LDA from MOS-6502 assembly. `t` must be of
-        the length `2 ** len(qi)`. It loads each list entry index of t into
-        the qi register and each list entry value into the qv register.
-
-        Args:
-            qi: qubit register for index
-            qv: qubit register for value
-            t: list of values
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.LDA(
-            self.sid,
-            len(qi),
-            self._ulonglong_byref(qi),
-            len(qv),
-            self._ulonglong_byref(qv),
-            self._to_ubyte(len(qv), t),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def adc(self, s, qi, qv, t):
-        """Add with Carry
-
-        Quantum counterpart for ADC from MOS-6502 assembly. `t` must be of
-        the length `2 ** len(qi)`.
-
-        Args:
-            qi: qubit register for index
-            qv: qubit register for value
-            t: list of values
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.ADC(
-            self.sid,
-            s,
-            len(qi),
-            self._ulonglong_byref(qi),
-            len(qv),
-            self._ulonglong_byref(qv),
-            self._to_ubyte(len(qv), t),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def sbc(self, s, qi, qv, t):
-        """Subtract with Carry
-
-        Quantum counterpart for SBC from MOS-6502 assembly. `t` must be of
-        the length `2 ** len(qi)`
-
-        Args:
-            qi: qubit register for index
-            qv: qubit register for value
-            t: list of values
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.SBC(
-            self.sid,
-            s,
-            len(qi),
-            self._ulonglong_byref(qi),
-            len(qv),
-            self._ulonglong_byref(qv),
-            self._to_ubyte(len(qv), t),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def hash(self, q, t):
-        """Hash function
-
-        Replicates the behaviour of LDA without the index register.
-        For the operation to be unitary, the entries present in `t` must be
-        unique, and the length of `t` must be `2 ** len(qi)`.
-
-
-        Args:
-            q: qubit register for value
-            t: list of values
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.Hash(
-            self.sid, len(q), self._ulonglong_byref(q), self._to_ubyte(len(q), t)
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     # boolean logic gates
     def qand(self, qi1, qi2, qo):
         """Logical AND
