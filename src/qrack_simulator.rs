@@ -11,20 +11,17 @@ struct QrackSimulator {
     // Interface for all the QRack functionality.
     //
     // Attributes:
-    //     qubit_count(i64): Number of qubits that are to be simulated.
     //     sid(i64): Corresponding simulator id.
-    qubit_count: u64,
     sid: u64
 }
 
 impl Clone for QrackSimulator {
     fn clone(&self) -> Self {
-        let qubit_count = self.qubit_count;
         let sid;
         unsafe {
             sid = qrack_system::bindings::init_clone(self.sid);
         }
-        Self{ qubit_count, sid }
+        Self{ sid }
     }
 }
 
@@ -59,7 +56,7 @@ impl QrackSimulator {
                 return Err(QrackError{});
             }
         }
-        return Ok(Self{ qubit_count, sid });
+        return Ok(Self{ sid });
     }
     pub fn new_layers(qubit_count: u64,
         is_schmidt_decompose_multi: bool,
@@ -107,7 +104,7 @@ impl QrackSimulator {
                 return Err(QrackError{});
             }
         }
-        return Ok(Self{ qubit_count, sid });
+        return Ok(Self{ sid });
     }
 
     // non-quantum
@@ -1969,64 +1966,74 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    // pseudo-quantum
+
+    // allocate and release
+    pub fn allocate_qubit(&self, qid: u64) -> Result<(), QrackError> {
+        // Allocate Qubit
+        //
+        // Allocate 1 new qubit with the given qubit ID.
+        //
+        // Args:
+        //    qid(u64): qubit id
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::allocateQubit(self.sid, qid);
+        }
+        self.check_error()
+    }
+
+    pub fn release(&self, q: u64) -> Result<bool, QrackError> {
+        // Release Qubit
+        //
+        // Release qubit given by the given qubit ID.
+        //
+        // Args:
+        //     q(u64): qubit id
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     If the qubit was in `|0>` state with small tolerance.
+
+        let result:bool;
+        unsafe {
+            result = qrack_system::bindings::release(self.sid, q);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn num_qubits(&self) -> Result<u64, QrackError> {
+        // Get Qubit count
+        //
+        // Returns the qubit count of the simulator.
+        //
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Qubit count of the simulator
+
+        let result:u64;
+        unsafe {
+            result = qrack_system::bindings::num_qubits(self.sid);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
 }
 /*
-    # pseudo-quantum
-
-    ## allocate and release
-    def allocate_qubit(self, qid):
-        """Allocate Qubit
-
-        Allocate 1 new qubit with the given qubit ID.
-
-        Args:
-            qid: qubit id
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.allocateQubit(self.sid, qid)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def release(self, q):
-        """Release Qubit
-
-        Release qubit given by the given qubit ID.
-
-        Args:
-            q: qubit id
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            If the qubit was in `|0>` state with small tolerance.
-        """
-        result = Qrack.qrack_lib.release(self.sid, q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def num_qubits(self):
-        """Get Qubit count
-
-        Returns the qubit count of the simulator.
-
-        Args:
-            q: qubit id
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Qubit count of the simulator
-        """
-        result = Qrack.qrack_lib.num_qubits(self.sid)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
     ## schmidt decomposition
     def compose(self, other, q):
         """Compose qubits
