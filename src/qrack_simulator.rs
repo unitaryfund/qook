@@ -1133,94 +1133,43 @@ impl QrackSimulator {
         }
         Ok(result)
     }
+
+    pub fn reset_all(&self) -> Result<(), QrackError> {
+        // Reset gate
+        //
+        // Resets all qubits to `|0>`
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::ResetAll(self.sid);
+        }
+        self.check_error()
+    }
+
+    // arithmetic-logic-unit (ALU)
+    pub fn add(&self, a: Vec<u64>, q: Vec<u64>) -> Result<(), QrackError> {
+        // Add integer to qubit
+        //
+        // Adds the given integer to the given set of qubits.
+        //
+        // Args:
+        //     a(Vec<u64>): number to add (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to add the number
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _a = a.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::ADD(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def reset_all(self):
-        """Reset gate
-
-        Resets all qubits to `|0>`
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.ResetAll(self.sid)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    # arithmetic-logic-unit (ALU)
-    def _split_longs(self, a):
-        """Split operation
-
-        Splits the given integer into 64 bit numbers.
-
-
-        Args:
-            a: number to split
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            list of split numbers.
-        """
-        aParts = []
-        if a == 0:
-            aParts.append(0)
-        while a > 0:
-            aParts.append(a & 0xFFFFFFFFFFFFFFFF)
-            a = a >> 64
-        return aParts
-
-    def _split_longs_2(self, a, m):
-        """Split simultanoues operation
-
-        Splits 2 integers into same number of 64 bit numbers.
-
-        Args:
-            a: first number to split
-            m: second number to split
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            pair of lists of split numbers.
-        """
-        aParts = []
-        mParts = []
-        if a == 0 and m == 0:
-            aParts.append(0)
-            mParts.append(0)
-        while a > 0 or m > 0:
-            aParts.append(a & 0xFFFFFFFFFFFFFFFF)
-            a = a >> 64
-            mParts.append(m & 0xFFFFFFFFFFFFFFFF)
-            m = m >> 64
-        return aParts, mParts
-
-    def add(self, a, q):
-        """Add integer to qubit
-
-        Adds the given integer to the given set of qubits.
-
-        Args:
-            a: first number to split
-            q: list of qubits to add the number
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.ADD(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def sub(self, a, q):
         """Subtract integer to qubit
 
