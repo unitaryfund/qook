@@ -1694,223 +1694,243 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    // boolean logic gates
+    pub fn qand(&self, qi1: u64, qi2: u64, qo: u64) -> Result<(), QrackError> {
+        // Logical AND
+        //
+        // Logical AND of 2 qubits whose result is stored in the target qubit.
+        //
+        // Args:
+        //     qi1(u64): qubit 1
+        //     qi2(u64): qubit 2
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::AND(self.sid, qi1, qi2, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn qor(&self, qi1: u64, qi2: u64, qo: u64) -> Result<(), QrackError> {
+        // Logical OR
+        //
+        // Logical OR of 2 qubits whose result is stored in the target qubit.
+        //
+        // Args:
+        //     qi1(u64): qubit 1
+        //     qi2(u64): qubit 2
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::OR(self.sid, qi1, qi2, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn qxor(&self, qi1: u64, qi2: u64, qo: u64) -> Result<(), QrackError> {
+        // Logical XOR
+        //
+        // Logical XOR of 2 qubits whose result is stored in the target qubit.
+        //
+        // Args:
+        //     qi1(u64): qubit 1
+        //     qi2(u64): qubit 2
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::XOR(self.sid, qi1, qi2, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn qnand(&self, qi1: u64, qi2: u64, qo: u64) -> Result<(), QrackError> {
+        // Logical NAND
+        //
+        // Logical NAND of 2 qubits whose result is stored in the target qubit.
+        //
+        // Args:
+        //     qi1(u64): qubit 1
+        //     qi2(u64): qubit 2
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::NAND(self.sid, qi1, qi2, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn qnor(&self, qi1: u64, qi2: u64, qo: u64) -> Result<(), QrackError> {
+        // Logical NOR
+        //
+        // Logical NOR of 2 qubits whose result is stored in the target qubit.
+        //
+        // Args:
+        //     qi1(u64): qubit 1
+        //     qi2(u64): qubit 2
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::NOR(self.sid, qi1, qi2, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn qxnor(&self, qi1: u64, qi2: u64, qo: u64) -> Result<(), QrackError> {
+        // Logical XNOR
+        //
+        // Logical XNOR of 2 qubits whose result is stored in the target qubit.
+        //
+        // Args:
+        //     qi1(u64): qubit 1
+        //     qi2(u64): qubit 2
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::XNOR(self.sid, qi1, qi2, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn cland(&self, ci: bool, qi: u64, qo: u64) -> Result<(), QrackError> {
+        // Classical AND
+        //
+        // Logical AND with one qubit and one classical bit whose result is
+        // stored in target qubit.
+        //
+        // Args:
+        //     ci(bool): classical bit
+        //     qi(u64): qubit
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::CLAND(self.sid, ci, qi, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn clor(&self, ci: bool, qi: u64, qo: u64) -> Result<(), QrackError> {
+        // Classical OR
+        //
+        // Logical OR with one qubit and one classical bit whose result is
+        // stored in target qubit.
+        //
+        // Args:
+        //     ci(bool): classical bit
+        //     qi(u64): qubit
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::CLOR(self.sid, ci, qi, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn clxor(&self, ci: bool, qi: u64, qo: u64) -> Result<(), QrackError> {
+        // Classical XOR
+        //
+        // Logical XOR with one qubit and one classical bit whose result is
+        // stored in target qubit.
+        //
+        // Args:
+        //     ci(bool): classical bit
+        //     qi(u64): qubit
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::CLXOR(self.sid, ci, qi, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn clnand(&self, ci: bool, qi: u64, qo: u64) -> Result<(), QrackError> {
+        // Classical NAND
+        //
+        // Logical NAND with one qubit and one classical bit whose result is
+        // stored in target qubit.
+        //
+        // Args:
+        //     ci(bool): classical bit
+        //     qi(u64): qubit
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::CLNAND(self.sid, ci, qi, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn clnor(&self, ci: bool, qi: u64, qo: u64) -> Result<(), QrackError> {
+        // Classical NOR
+        //
+        // Logical NOR with one qubit and one classical bit whose result is
+        // stored in target qubit.
+        //
+        // Args:
+        //     ci(bool): classical bit
+        //     qi(u64): qubit
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::CLNOR(self.sid, ci, qi, qo);
+        }
+        self.check_error()
+    }
+
+    pub fn clxnor(&self, ci: bool, qi: u64, qo: u64) -> Result<(), QrackError> {
+        // Classical XNOR
+        //
+        // Logical XNOR with one qubit and one classical bit whose result is
+        // stored in target qubit.
+        //
+        // Args:
+        //     ci(bool): classical bit
+        //     qi(u64): qubit
+        //     qo(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::CLXNOR(self.sid, ci, qi, qo);
+        }
+        self.check_error()
+    }
 }
 /*
-    # boolean logic gates
-    def qand(self, qi1, qi2, qo):
-        """Logical AND
-
-        Logical AND of 2 qubits whose result is stored in the target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.AND(self.sid, qi1, qi2, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def qor(self, qi1, qi2, qo):
-        """Logical OR
-
-        Logical OR of 2 qubits whose result is stored in the target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.OR(self.sid, qi1, qi2, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def qxor(self, qi1, qi2, qo):
-        """Logical XOR
-
-        Logical exlusive-OR of 2 qubits whose result is stored in the target
-        qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.XOR(self.sid, qi1, qi2, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def qnand(self, qi1, qi2, qo):
-        """Logical NAND
-
-        Logical NAND of 2 qubits whose result is stored in the target
-        qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.NAND(self.sid, qi1, qi2, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def qnor(self, qi1, qi2, qo):
-        """Logical NOR
-
-        Logical NOR of 2 qubits whose result is stored in the target
-        qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.NOR(self.sid, qi1, qi2, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def qxnor(self, qi1, qi2, qo):
-        """Logical XOR
-
-        Logical exlusive-NOR of 2 qubits whose result is stored in the target
-        qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.XNOR(self.sid, qi1, qi2, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def cland(self, ci, qi, qo):
-        """Classical AND
-
-        Logical AND with one qubit and one classical bit whose result is
-        stored in target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CLAND(self.sid, ci, qi, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def clor(self, ci, qi, qo):
-        """Classical OR
-
-        Logical OR with one qubit and one classical bit whose result is
-        stored in target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CLOR(self.sid, ci, qi, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def clxor(self, ci, qi, qo):
-        """Classical XOR
-
-        Logical exlusive-OR with one qubit and one classical bit whose result is
-        stored in target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CLXOR(self.sid, ci, qi, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def clnand(self, ci, qi, qo):
-        """Classical NAND
-
-        Logical NAND with one qubit and one classical bit whose result is
-        stored in target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CLNAND(self.sid, ci, qi, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def clnor(self, ci, qi, qo):
-        """Classical NOR
-
-        Logical NOR with one qubit and one classical bit whose result is
-        stored in target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CLNOR(self.sid, ci, qi, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def clxnor(self, ci, qi, qo):
-        """Classical XNOR
-
-        Logical exlusive-NOR with one qubit and one classical bit whose result is
-        stored in target qubit.
-
-        Args:
-            qi1: qubit 1
-            qi2: qubit 2
-            qo: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CLXNOR(self.sid, ci, qi, qo)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     # Particular Quantum Circuits
 
     ## fourier transform
