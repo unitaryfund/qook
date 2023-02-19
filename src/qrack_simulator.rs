@@ -1929,42 +1929,48 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    // Particular Quantum Circuits
+
+    // fourier transform
+    pub fn qft(&self, qs: Vec<u64>) -> Result<(), QrackError> {
+        // Quantum Fourier Transform
+        //
+        // Applies Quantum Fourier Transform on the list of qubits provided.
+        //
+        // Args:
+        //     qs(Vec<u64>): list of qubits
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _qs = qs.to_vec();
+        unsafe {
+            qrack_system::bindings::QFT(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn iqft(&self, qs: Vec<u64>) -> Result<(), QrackError> {
+        // Inverse-quantum Fourier Transform
+        //
+        // Applies Inverse-quantum Fourier Transform on the list of qubits
+        // provided.
+        //
+        // Args:
+        //     qs(Vec<u64>): list of qubits
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _qs = qs.to_vec();
+        unsafe {
+            qrack_system::bindings::IQFT(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    # Particular Quantum Circuits
-
-    ## fourier transform
-    def qft(self, qs):
-        """Quantum Fourier Transform
-
-        Applies Quantum Fourier Transform on the list of qubits provided.
-
-        Args:
-            qs: list of qubits
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.QFT(self.sid, len(qs), self._ulonglong_byref(qs))
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def iqft(self, qs):
-        """Inverse-quantum Fourier Transform
-
-        Applies Inverse-quantum Fourier Transform on the list of qubits
-        provided.
-
-        Args:
-            qs: list of qubits
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.IQFT(self.sid, len(qs), self._ulonglong_byref(qs))
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     # pseudo-quantum
 
     ## allocate and release
