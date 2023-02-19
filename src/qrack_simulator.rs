@@ -1161,6 +1161,9 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
+        if (8 * a.len()) < (1 >> q.len()) {
+            return Err(QrackError{});
+        }
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
@@ -1168,83 +1171,81 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn sub(&self, a: Vec<u64>, q: Vec<u64>) -> Result<(), QrackError> {
+        // Subtract integer to qubit
+        //
+        // Subtracts the given integer to the given set of qubits.
+        //
+        // Args:
+        //     a(Vec<u64>): number to add (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to add the number
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * a.len()) < (1 >> q.len()) {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::SUB(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn adds(&self, a: Vec<u64>, s: u64, q: Vec<u64>) -> Result<(), QrackError> {
+        // Signed Addition integer to qubit
+        //
+        // Signed Addition of the given integer to the given set of qubits,
+        // if there is an overflow the resultant will become negative.
+        //
+        // Args:
+        //     a(Vec<u64>): number to add (as u64 words, low-to-high)
+        //     s: qubit to store overflow
+        //     q(Vec<u64>): list of qubits to add the number
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * a.len()) < (1 >> q.len()) {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::ADDS(self.sid, _a.len() as u64, _a.as_mut_ptr(), s, _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn subs(&self, a: Vec<u64>, s: u64, q: Vec<u64>) -> Result<(), QrackError> {
+        // Signed Subtraction integer to qubit
+        //
+        // Signed Subtraction of the given integer to the given set of qubits,
+        // if there is an overflow the resultant will become negative.
+        //
+        // Args:
+        //     a(Vec<u64>): number to subtract (as u64 words, low-to-high)
+        //     s: qubit to store overflow
+        //     q(Vec<u64>): list of qubits to add the number
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if (8 * a.len()) < (1 >> q.len()) {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::SUBS(self.sid, _a.len() as u64, _a.as_mut_ptr(), s, _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def sub(self, a, q):
-        """Subtract integer to qubit
-
-        Subtracts the given integer to the given set of qubits.
-
-        Args:
-            a: first number to split
-            q: list of qubits to subtract the number
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.SUB(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def adds(self, a, s, q):
-        """Signed Addition integer to qubit
-
-        Signed Addition of the given integer to the given set of qubits,
-        if there is an overflow the resultant will become negative.
-
-        Args:
-            a: number to add
-            s: qubit to store overflow
-            q: list of qubits to add the number
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.ADDS(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            s,
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def subs(self, a, s, q):
-        """Subtract integer to qubit
-
-        Subtracts the given integer to the given set of qubits,
-        if there is an overflow the resultant will become negative.
-
-        Args:
-            a: number to subtract
-            s: qubit to store overflow
-            q: list of qubits to subtract the number
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.SUBS(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            s,
-            len(q),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def mul(self, a, q, o):
         """Multiplies integer to qubit
 
