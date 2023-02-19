@@ -373,32 +373,27 @@ impl QrackSimulator {
     }
 
     // Not supported, for now
-    // pub fn exp(&self, b: &[Pauli], ph: &[f64], q: &[u64]) -> Result<(), QrackError> {
+    pub fn exp(&self, b: Vec<Pauli>, ph: f64, q: Vec<u64>) -> Result<(), QrackError> {
         // Arbitrary exponentiation
         //
         // `exp(b, theta) = e^{i*theta*[b_0 . b_1 ...]}`
         // where `.` is the tensor product.
         //
         // Args:
-        //     b(&[Pauli]): Pauli basis
-        //     ph(&[f64]): coefficient of exponentiation
-        //     q(&[u64]): the qubit number on which the gate is applied to
+        //     b(Vec<Pauli>): Pauli basis
+        //     ph(f64): coefficient of exponentiation
+        //     q(Vec<u64>): the qubit number on which the gate is applied to
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-    //     unsafe {
-    //         qrack_system::bindings::Exp(self.sid, b as &[u64], ph, q);
-    //     }
-    //     Qrack.qrack_lib.Exp(
-    //         self.sid,
-    //         len(b),
-    //         self._ulonglong_byref(b),
-    //         ctypes.c_double(ph),
-    //         self._ulonglong_byref(q),
-    //     )
-    //     self.check_error()
-    // }
+        let mut _b = b.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::Exp(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, ph, _q.as_mut_ptr() as *mut u64);
+        }
+        self.check_error()
+    }
 
     // multi-qubit gates
 
@@ -408,15 +403,15 @@ impl QrackSimulator {
         // If all controlled qubits are `|1>` then the target qubit is flipped.
         //
         // Args:
-        //     c(&[u64]): list of controlled qubits.
+        //     c(Vec<u64>): list of controlled qubits.
         //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        let mut a = c.to_vec();
+        let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCX(self.sid, a.len() as u64, a.as_mut_ptr(), q)
+            qrack_system::bindings::MCX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
         }
         self.check_error()
     }
