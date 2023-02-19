@@ -340,15 +340,15 @@ impl QrackSimulator {
         // Applies arbitrary operation defined by the given matrix.
         //
         // Args:
-        //     m(&[f64]): row-major complex list representing the operator.
+        //     m(&[f64;8]): row-major complex list representing the operator.
         //     q(u64): the qubit number on which the gate is applied to.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        let mut a = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
+        let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
         unsafe {
-            qrack_system::bindings::Mtrx(self.sid, a.as_mut_ptr(), q);
+            qrack_system::bindings::Mtrx(self.sid, _m.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -443,8 +443,8 @@ impl QrackSimulator {
         // the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -463,8 +463,8 @@ impl QrackSimulator {
         // the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -483,8 +483,8 @@ impl QrackSimulator {
         // the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -503,8 +503,8 @@ impl QrackSimulator {
         // the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -523,8 +523,8 @@ impl QrackSimulator {
         // the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -543,8 +543,8 @@ impl QrackSimulator {
         // the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -563,11 +563,11 @@ impl QrackSimulator {
         // parameters is applied to the target qubit.
         //
         // Args:
-        //     c: list of controlled qubits.
-        //     q: target qubit.
-        //     th: theta
-        //     ph: phi
-        //     la: lambda
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //     th(f64): theta
+        //     ph(f64): phi
+        //     la(f64): lambda
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -578,28 +578,30 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn mcmtrx(&self, c: Vec<u64>, m: &[f64;8], q: u64) -> Result<(), QrackError> {
+        // Multi-controlled arbitraty operator
+        //
+        // If all controlled qubits are `|1>` then the arbitrary operation by
+        // parameters is applied to the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits
+        //     m(&[f64;8]): row-major complex list representing the operator.
+        //     q(u64): target qubit
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
 }
 /*
-    def mcmtrx(self, c, m, q):
-        """Multi-controlled arbitraty operator
-
-        If all controlled qubits are `|1>` then the arbitrary operation by
-        parameters is applied to the target qubit.
-
-        Args:
-            c: list of controlled qubits
-            m: row-major complex list representing the operator.
-            q: target qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCMtrx(
-            self.sid, len(c), self._ulonglong_byref(c), self._complex_byref(m), q
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def macx(self, c, q):
         """Anti multi-controlled X gate
 
