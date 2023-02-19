@@ -1259,93 +1259,95 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn div(&self, a: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Divides qubit by integer
+        //
+        // 'Divides' the given qubits by the integer.
+        // (Specifically, this is rather the adjoint of "mul().")
+        // Carry register is required for maintaining the unitary nature of
+        // operation.
+        //
+        // Args:
+        //     a(Vec<u64>): number by which to divide (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to divide
+        //     o(Vec<u64>): carry register
+        //
+        // Raises:
+        //    RuntimeError: QrackSimulator raised an exception.
+
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::DIV(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn muln(&self, a: Vec<u64>, m: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Modulo Multiplication
+        //
+        // Modulo Multiplication of the given integer to the given set of qubits
+        // Carry register is required for maintaining the unitary nature of
+        // operation.
+        //
+        // Args:
+        //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
+        //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to multiply the number
+        //     o(Vec<u64>): carry register
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _m = m.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MULN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn divn(&self, a: Vec<u64>, m: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Modulo Division
+        //
+        // 'Modulo Division' of the given set of qubits by the given integer
+        // (Specifically, this is rather the adjoint of "muln().")
+        // Carry register is required for maintaining the unitary nature of
+        // operation.
+        //
+        // Args:
+        //     a(Vec<u64>): number by which to divide (as u64 words, low-to-high)
+        //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to divide
+        //     o(Vec<u64>): carry register
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _m = m.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::DIVN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def div(self, a, q, o):
-        """Divides qubit by integer
-
-        'Divides' the given qubits by the integer.
-        Carry register is required for maintaining the unitary nature of
-        operation. 
-
-        Args:
-            a: integer to divide by
-            q: qubits to divide
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.DIV(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def muln(self, a, m, q, o):
-        """Modulo Multiplication
-
-        Modulo Multiplication of the given integer to the given set of qubits
-        Carry register is required for maintaining the unitary nature of
-        operation. 
-
-        Args:
-            a: number to multiply
-            m: modulo number
-            q: list of qubits to multiply the number
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts, mParts = self._split_longs_2(a, m)
-        Qrack.qrack_lib.MULN(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            self._ulonglong_byref(mParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def divn(self, a, m, q, o):
-        """Modulo Division
-
-        'Modulo Division' of the given set of qubits by the given integer
-        Carry register is required for maintaining the unitary nature of
-        operation, and must be as long as the input qubit registe. 
-
-        Args:
-            a: integer by which qubit will be divided
-            m: modulo integer
-            q: qubits to divide
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts, mParts = self._split_longs_2(a, m)
-        Qrack.qrack_lib.DIVN(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            self._ulonglong_byref(mParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def pown(self, a, m, q, o):
         """Modulo Power
 
