@@ -415,76 +415,88 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn mcy(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled Y gate
+        //
+        // If all controlled qubits are `|1>` then the Pauli "Y" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+        }
+        self.check_error()
+    }
+
+    pub fn mcz(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled Z gate
+        //
+        // If all controlled qubits are `|1>` then the Pauli "Z" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c: list of controlled qubits.
+        //     q: target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+        }
+        self.check_error()
+    }
+
+    pub fn mch(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled H gate
+        //
+        // If all controlled qubits are `|1>` then the Hadarmard gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c: list of controlled qubits.
+        //     q: target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+        }
+        self.check_error()
+    }
+
+    pub fn mcs(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled S gate
+        //
+        // If all controlled qubits are `|1>` then the "S" gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c: list of controlled qubits.
+        //     q: target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+        }
+        self.check_error()
+    }
 }
 /*
-    def mcy(self, c, q):
-        """Multi-controlled Y gate
-
-        If all controlled qubits are `|1>` then the Pauli "Y" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCY(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcz(self, c, q):
-        """Multi-controlled Z gate
-
-        If all controlled qubits are `|1>` then the Pauli "Z" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCZ(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mch(self, c, q):
-        """Multi-controlled H gate
-
-        If all controlled qubits are `|1>` then the Hadarmard gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCH(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcs(self, c, q):
-        """Multi-controlled S gate
-
-        If all controlled qubits are `|1>` then the "S" gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCS(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def mct(self, c, q):
         """Multi-controlled T gate
 
