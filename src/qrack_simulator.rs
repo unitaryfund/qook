@@ -1232,35 +1232,35 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn mul(&self, a: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Multiplies integer to qubits
+        //
+        // Multiplies the given integer to the given set of qubits.
+        // Carry register is required for maintaining the unitary nature of
+        // operation and must be as long as the input qubit register.
+        //
+        // Args:
+        //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to multiply the number
+        //     o(Vec<u64>): carry register
+        //
+        // Raises:
+        //    RuntimeError: QrackSimulator raised an exception.
+
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::MUL(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def mul(self, a, q, o):
-        """Multiplies integer to qubit
-
-        Multiplies the given integer to the given set of qubits.
-        Carry register is required for maintaining the unitary nature of
-        operation, and must be as long as the input qubit register. 
-
-        Args:
-            a: number to multiply
-            q: list of qubits to multiply the number
-            o: carry register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts = self._split_longs(a)
-        Qrack.qrack_lib.MUL(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def div(self, a, q, o):
         """Divides qubit by integer
 
