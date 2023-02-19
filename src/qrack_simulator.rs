@@ -1299,12 +1299,15 @@ impl QrackSimulator {
         //     a(Vec<u64>): number to multiply (as u64 words, low-to-high)
         //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
         //     q(Vec<u64>): list of qubits to multiply the number
-        //     o(Vec<u64>): carry register
+        //     o(Vec<u64>): result register
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
         if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        if q.len() != o.len() {
             return Err(QrackError{});
         }
         let mut _a = a.to_vec();
@@ -1329,12 +1332,15 @@ impl QrackSimulator {
         //     a(Vec<u64>): number by which to divide (as u64 words, low-to-high)
         //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
         //     q(Vec<u64>): list of qubits to divide
-        //     o(Vec<u64>): carry register
+        //     o(Vec<u64>): result register
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
         if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        if q.len() != o.len() {
             return Err(QrackError{});
         }
         let mut _a = a.to_vec();
@@ -1346,36 +1352,39 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn pown(&self, a: Vec<u64>, m: Vec<u64>, q: Vec<u64>, o: Vec<u64>) -> Result<(), QrackError> {
+        // Modulo Power
+        //
+        // Raises the qubit to the power `a` to which `mod m` is applied to.
+        // Out-of-place register is required to store the resultant.
+        //
+        // Args:
+        //     a(Vec<u64>): power by which to raise (as u64 words, low-to-high)
+        //     m(Vec<u64>): modulo number (as u64 words, low-to-high)
+        //     q(Vec<u64>): list of qubits to exponentiate
+        //     o(Vec<u64>): result register
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if a.len() != m.len() {
+            return Err(QrackError{});
+        }
+        if q.len() != o.len() {
+            return Err(QrackError{});
+        }
+        let mut _a = a.to_vec();
+        let mut _m = m.to_vec();
+        let mut _q = q.to_vec();
+        let mut _o = o.to_vec();
+        unsafe {
+            qrack_system::bindings::POWN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+        }
+        self.check_error()
+    }
 }
 /*
-    def pown(self, a, m, q, o):
-        """Modulo Power
-
-        Raises the qubit to the power `a` to which `mod m` is applied to.
-        Out-of-place register is required to store the resultant.
-
-        Args:
-            a: number in power
-            m: modulo number
-            q: list of qubits to exponentiate
-            o: out-of-place register
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        aParts, mParts = self._split_longs_2(a, m)
-        Qrack.qrack_lib.POWN(
-            self.sid,
-            len(aParts),
-            self._ulonglong_byref(aParts),
-            self._ulonglong_byref(mParts),
-            len(q),
-            self._ulonglong_byref(q),
-            self._ulonglong_byref(o),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def mcadd(self, a, c, q):
         """Controlled-add
 
