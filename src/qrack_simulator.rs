@@ -2032,74 +2032,79 @@ impl QrackSimulator {
         }
         Ok(result)
     }
+
+    // schmidt decomposition
+    pub fn compose(&self, other: QrackSimulator, q: Vec<u64>) -> Result<(), QrackError> {
+        // Compose qubits
+        //
+        // Compose quantum description of given qubit with the current system.
+        //
+        // Args:
+        //    other(QrackSimulator): other QrackSimulator to insert
+        //    q(Vec<u64>): qubit ids in 'other' to compose
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::Compose(self.sid, other.sid, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn decompose(&self, q: Vec<u64>) -> Result<QrackSimulator, QrackError> {
+        // Decompose system
+        //
+        // Decompose the given qubit out of the system.
+        // Warning: The qubit subsystem state must be separable, or the behavior
+        // of this method is undefined.
+        //
+        // Args:
+        //     q(Vec<u64>): qubit ids of subsystem to decompose
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //    new QrackSimulator with decomposed subsytem
+
+        let mut other = QrackSimulator::new(0).unwrap();
+        unsafe {
+            qrack_system::bindings::destroy(other.sid);
+        }
+        let mut _q = q.to_vec();
+        unsafe {
+            other.sid = qrack_system::bindings::Decompose(self.sid, _q.len() as u64, _q.as_mut_ptr());
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(other)
+    }
+
+    pub fn dispose(&self, q: Vec<u64>) -> Result<(), QrackError> {
+        // Dispose qubits
+        //
+        // Minimally decompose a set of contiguous bits from the separably
+        // composed unit, and discard the separable bits.
+        // Warning: The qubit subsystem state must be separable, or the behavior
+        // of this method is undefined.
+        //
+        // Args:
+        //     q(Vec<u64>): qubit ids of subsystem to dispose
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::Dispose(self.sid, _q.len() as u64, _q.as_mut_ptr())
+        }
+        self.check_error()
+    }
 }
 /*
-    ## schmidt decomposition
-    def compose(self, other, q):
-        """Compose qubits
-
-        Compose quantum description of given qubit with the current system.
-
-        Args:
-            q: qubit id
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.Compose(self.sid, other.sid, self._ulonglong_byref(q))
-        self._qubit_count = self._qubit_count + other._qubit_count
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def decompose(self, q):
-        """Decompose system
-
-        Decompose the given qubit out of the system.
-        Warning: The qubit subsystem state must be separable, or the behavior 
-        of this method is undefined.
-
-        Args:
-            q: qubit id
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            State of the systems.
-        """
-        other = QrackSimulator()
-        Qrack.qrack_lib.destroy(other.sid)
-        l = len(q)
-        other.sid = Qrack.qrack_lib.Decompose(self.sid, l, self._ulonglong_byref(q))
-        self._qubit_count = self._qubit_count - l
-        other._qubit_count = l
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return other
-
-    def dispose(self, q):
-        """Dispose qubits
-
-        Minimally decompose a set of contiguous bits from the separably
-        composed unit, and discard the separable bits.
-        Warning: The qubit subsystem state must be separable, or the behavior 
-        of this method is undefined.
-
-        Args:
-            q: qubit
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            State of the systems.
-        """
-        l = len(q)
-        Qrack.qrack_lib.Dispose(self.sid, l, self._ulonglong_byref(q))
-        self._qubit_count = self._qubit_count - l
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     ## miscellaneous
     def dump_ids(self):
         """Dump all IDs
