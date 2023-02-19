@@ -411,7 +411,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -431,7 +431,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -451,7 +451,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -471,7 +471,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -491,7 +491,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -511,7 +511,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -531,57 +531,55 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q)
+            qrack_system::bindings::MCAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn mcadjt(&self, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled adjt gate
+        //
+        // If all controlled qubits are `|1>` then the adjt gate is applied to
+        // the target qubit.
+        //
+        // Args:
+        //     c: list of controlled qubits.
+        //     q: target qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCAdjT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn mcu(&self, c: Vec<u64>, q: u64, th: f64, ph: f64, la: f64) -> Result<(), QrackError> {
+        // Multi-controlled arbitraty unitary
+        //
+        // If all controlled qubits are `|1>` then the unitary gate described by
+        // parameters is applied to the target qubit.
+        //
+        // Args:
+        //     c: list of controlled qubits.
+        //     q: target qubit.
+        //     th: theta
+        //     ph: phi
+        //     la: lambda
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCU(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, th, ph, la);
         }
         self.check_error()
     }
 }
 /*
-    def mcadjt(self, c, q):
-        """Multi-controlled adjt gate
-
-        If all controlled qubits are `|1>` then the adjt gate is applied to
-        the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCAdjT(self.sid, len(c), self._ulonglong_byref(c), q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcu(self, c, q, th, ph, la):
-        """Multi-controlled arbitraty unitary
-
-        If all controlled qubits are `|1>` then the unitary gate described by
-        parameters is applied to the target qubit.
-
-        Args:
-            c: list of controlled qubits.
-            q: target qubit.
-            th: theta
-            ph: phi
-            la: lambda
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCU(
-            self.sid,
-            len(c),
-            self._ulonglong_byref(c),
-            q,
-            ctypes.c_double(th),
-            ctypes.c_double(ph),
-            ctypes.c_double(la),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
     def mcmtrx(self, c, m, q):
         """Multi-controlled arbitraty operator
 
