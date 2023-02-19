@@ -1606,7 +1606,7 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (8 * t.len()) != ((1 << qi.len()) * qv.len()) {
+        if (8 * t.len()) < ((1 << qi.len()) * qv.len()) {
             return Err(QrackError{});
         }
         let mut _qi = qi.to_vec();
@@ -1632,7 +1632,7 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (8 * t.len()) != ((1 << qi.len()) * qv.len()) {
+        if (8 * t.len()) < ((1 << qi.len()) * qv.len()) {
             return Err(QrackError{});
         }
         let mut _qi = qi.to_vec();
@@ -1658,7 +1658,7 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (8 * t.len()) != ((1 << qi.len()) * qv.len()) {
+        if (8 * t.len()) < ((1 << qi.len()) * qv.len()) {
             return Err(QrackError{});
         }
         let mut _qi = qi.to_vec();
@@ -1684,7 +1684,7 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
-        if (8 * t.len()) != (1 << q.len()) {
+        if (8 * t.len()) < (1 << q.len()) {
             return Err(QrackError{});
         }
         let mut _q = q.to_vec();
