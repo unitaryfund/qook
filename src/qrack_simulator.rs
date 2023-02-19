@@ -329,7 +329,6 @@ impl QrackSimulator {
         self.check_error()
     }
 
-    // Not supported, for now
     pub fn exp(&self, b: Vec<Pauli>, ph: f64, q: Vec<u64>) -> Result<(), QrackError> {
         // Arbitrary exponentiation
         //
@@ -344,6 +343,9 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
 
+        if b.len() != q.len() {
+            return Err(QrackError{});
+        }
         let mut _b = b.to_vec();
         let mut _q = q.to_vec();
         unsafe {
@@ -783,311 +785,356 @@ impl QrackSimulator {
         }
         self.check_error()
     }
+
+    pub fn mx(&self, q: Vec<u64>) -> Result<(), QrackError> {
+        // Multi X-gate
+        //
+        // Applies the Pauli “X” operator on all qubits.
+        //
+        // Args:
+        //     q(Vec<u64>): list of qubits to apply X on.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::MX(self.sid, _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn my(&self, q: Vec<u64>) -> Result<(), QrackError> {
+        // Multi Y-gate
+        //
+        // Applies the Pauli “Y” operator on all qubits.
+        //
+        // Args:
+        //     q(Vec<u64>): list of qubits to apply Y on.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::MY(self.sid, _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mz(&self, q: Vec<u64>) -> Result<(), QrackError> {
+        // Multi Z-gate
+        //
+        // Applies the Pauli “Z” operator on all qubits.
+        //
+        // Args:
+        //     q(Vec<u64>): list of qubits to apply Z on.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::MZ(self.sid, _q.len() as u64, _q.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
+    pub fn mcr(&self, b: Pauli, ph: f64, c: Vec<u64>, q: u64) -> Result<(), QrackError> {
+        // Multi-controlled arbitrary rotation.
+        //
+        // If all controlled qubits are `|1>` then the arbitrary rotation by
+        // parameters is applied to the target qubit.
+        //
+        // Args:
+        //     b(Pauli): Pauli basis
+        //     ph(f64): coefficient of exponentiation.
+        //     c(Vec<u64>): list of controlled qubits.
+        //     q(u64): the qubit number on which the gate is applied to.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::MCR(self.sid, b as u64, ph, _c.len() as u64, _c.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn mcexp(&self, b: Vec<Pauli>, ph: f64, cs: Vec<u64>, q: Vec<u64>) -> Result<(), QrackError> {
+        // Arbitrary exponentiation
+        //
+        // `exp(b, theta) = e^{i*theta*[b_0 . b_1 ...]}`
+        // where `.` is the tensor product.
+        //
+        // Args:
+        //     b(Vec<Pauli>): Pauli basis
+        //     ph(f64): coefficient of exponentiation
+        //     q(Vec<u64>): the qubit number on which the gate is applied to
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        if b.len() != q.len() {
+            return Err(QrackError{});
+        }
+        let mut _b = b.to_vec();
+        let mut _cs = cs.to_vec();
+        let mut _q = q.to_vec();
+        unsafe {
+            qrack_system::bindings::MCExp(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, ph, _cs.len() as u64, _cs.as_mut_ptr(), _q.as_mut_ptr() as *mut u64);
+        }
+        self.check_error()
+    }
+
+    pub fn swap(&self, qi1: u64, qi2: u64) -> Result<(), QrackError> {
+        // Swap Gate
+        //
+        // Swaps the qubits at two given positions.
+        //
+        // Args:
+        //     qi1(u64): First position of qubit.
+        //     qi2(u64): Second position of qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::SWAP(self.sid, qi1, qi2);
+        }
+        self.check_error()
+    }
+
+    pub fn iswap(&self, qi1: u64, qi2: u64) -> Result<(), QrackError> {
+        // Swap Gate with phase.
+        //
+        // Swaps the qubits at two given positions.
+        // If the bits are different then there is additional phase of `i`.
+        //
+        // Args:
+        //     qi1(u64): First position of qubit.
+        //     qi2(u64): Second position of qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::ISWAP(self.sid, qi1, qi2);
+        }
+        self.check_error()
+    }
+
+    pub fn adjiswap(&self, qi1: u64, qi2: u64) -> Result<(), QrackError> {
+        // Swap Gate with phase.
+        //
+        // Swaps the qubits at two given positions.
+        // If the bits are different then there is additional phase of `-i`.
+        //
+        // Args:
+        //     qi1(u64): First position of qubit.
+        //     qi2(u64): Second position of qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::AdjISWAP(self.sid, qi1, qi2);
+        }
+        self.check_error()
+    }
+
+    pub fn fsim(&self, th: f64, ph: f64, qi1: u64, qi2: u64) -> Result<(), QrackError> {
+        // Fsim gate.
+        //
+        // The 2-qubit “fSim” gate
+        // Useful in the simulation of particles with fermionic statistics
+        //
+        // Args:
+        //     qi1(u64): First position of qubit.
+        //     qi2(u64): Second position of qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::bindings::FSim(self.sid, th, ph, qi1, qi2);
+        }
+        self.check_error()
+    }
+
+    pub fn cswap(&self, c: Vec<u64>, qi1: u64, qi2: u64) -> Result<(), QrackError> {
+        // Controlled-swap Gate
+        //
+        // Swaps the qubits at two given positions if the control qubits are `|1>`
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     qi1(u64): First position of qubit.
+        //     qi2(u64): Second position of qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::CSWAP(self.sid, _c.len() as u64, _c.as_mut_ptr(), qi1, qi2);
+        }
+        self.check_error()
+    }
+
+    pub fn acswap(&self, c: Vec<u64>, qi1: u64, qi2: u64) -> Result<(), QrackError> {
+        // Anti controlled-swap Gate
+        //
+        // Swaps the qubits at two given positions if the control qubits are `|0>`
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits.
+        //     qi1(u64): First position of qubit.
+        //     qi2(u64): Second position of qubit.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::bindings::ACSWAP(self.sid, _c.len() as u64, _c.as_mut_ptr(), qi1, qi2);
+        }
+        self.check_error()
+    }
+
+    // standard operations
+    pub fn m(&self, q: u64) -> Result<u64, QrackError> {
+        // Measurement gate
+        //
+        // Measures the qubit at "q" and returns Boolean value.
+        // This operator is not unitary & is probabilistic in nature.
+        //
+        // Args:
+        //     q(u64): qubit to measure
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Measurement result.
+
+        let result:u64;
+        unsafe {
+            result = qrack_system::bindings::M(self.sid, q);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn force_m(&self, q: u64, r: bool) -> Result<u64, QrackError> {
+        // Force-Measurement gate
+        //
+        // Acts as if the measurement is applied and the result obtained is `r`
+        //
+        // Args:
+        //     q(u64): qubit to measure
+        //     r(bool): the required result
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Measurement result.
+
+        let result:u64;
+        unsafe {
+            result = qrack_system::bindings::ForceM(self.sid, q, r);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn m_all(&self) -> Result<u64, QrackError> {
+        // Measure-all gate
+        //
+        // Measures measures all qubits.
+        // This operator is not unitary & is probabilistic in nature.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Measurement result of all qubits.
+
+        let result:u64;
+        unsafe {
+            result = qrack_system::bindings::MAll(self.sid);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn measure_pauli(&self, b: Vec<Pauli>, q: Vec<u64>) -> Result<u64, QrackError> {
+        // Pauli Measurement gate
+        //
+        // Measures the qubits at "q" with the given pauli bases.
+        // This operator is not unitary & is probabilistic in nature.
+        //
+        // Args:
+        //     b(Pauli): Pauli basis
+        //     q(u64): qubit to measure
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Measurement result.
+
+        if b.len() != q.len() {
+            return Err(QrackError{});
+        }
+        let mut _b = b.to_vec();
+        let mut _q = q.to_vec();
+        let result:u64;
+        unsafe {
+            result = qrack_system::bindings::Measure(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, _q.as_mut_ptr());
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn measure_shots(&self, q: Vec<u64>, s: u64) -> Result<Vec<u64>, QrackError> {
+        // Multi-shot measurement operator
+        //
+        // Samples the qubits at "q" with the given pauli bases.
+        // This operator is probabilistic in nature.
+        //
+        // Args:
+        //     q(Vec<u64>): list of qubits to measure
+        //     s(u64): number of shots
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Vec<u64> of measurement result.
+
+        let mut _q = q.to_vec();
+        let mut result = vec![0;s as usize];
+        unsafe {
+            qrack_system::bindings::MeasureShots(self.sid, _q.len() as u64, _q.as_mut_ptr(), s, result.as_mut_ptr());
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
 }
 /*
-    def mx(self, q):
-        """Multi X-gate
-
-        Applies the Pauli “X” operator on all qubits.
-
-        Args:
-            q: list of qubits to apply X on.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MX(self.sid, len(q), self._ulonglong_byref(q))
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def my(self, q):
-        """Multi Y-gate
-
-        Applies the Pauli “Y” operator on all qubits.
-
-        Args:
-            q: list of qubits to apply Y on.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MY(self.sid, len(q), self._ulonglong_byref(q))
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mz(self, q):
-        """Multi Z-gate
-
-        Applies the Pauli “Z” operator on all qubits.
-
-        Args:
-            q: list of qubits to apply Z on.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MZ(self.sid, len(q), self._ulonglong_byref(q))
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcr(self, b, ph, c, q):
-        """Multi-controlled arbitrary rotation.
-
-        If all controlled qubits are `|1>` then the arbitrary rotation by
-        parameters is applied to the target qubit.
-
-        Args:
-            b: Pauli basis
-            ph: coefficient of exponentiation.
-            c: list of controlled qubits.
-            q: the qubit number on which the gate is applied to.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCR(
-            self.sid,
-            ctypes.c_ulonglong(b),
-            ctypes.c_double(ph),
-            len(c),
-            self._ulonglong_byref(c),
-            q,
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def mcexp(self, b, ph, cs, q):
-        """Multi-controlled arbitrary exponentiation
-
-        If all controlled qubits are `|1>` then the target qubit is
-        exponentiated an pauli basis basis with coefficient.
-
-        Args:
-            b: Pauli basis
-            ph: coefficient of exponentiation.
-            q: the qubit number on which the gate is applied to.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.MCExp(
-            self.sid,
-            len(b),
-            self._ulonglong_byref(b),
-            ctypes.c_double(ph),
-            len(cs),
-            self._ulonglong_byref(cs),
-            self._ulonglong_byref(q),
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def swap(self, qi1, qi2):
-        """Swap Gate
-
-        Swaps the qubits at two given positions.
-
-        Args:
-            qi1: First position of qubit.
-            qi2: Second position of qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.SWAP(self.sid, qi1, qi2)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def iswap(self, qi1, qi2):
-        """Swap Gate with phase.
-
-        Swaps the qubits at two given positions.
-        If the bits are different then there is additional phase of `i`.
-
-        Args:
-            qi1: First position of qubit.
-            qi2: Second position of qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.ISWAP(self.sid, qi1, qi2)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def adjiswap(self, qi1, qi2):
-        """Swap Gate with phase.
-
-        Swaps the qubits at two given positions.
-        If the bits are different then there is additional phase of `-i`.
-
-        Args:
-            qi1: First position of qubit.
-            qi2: Second position of qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.AdjISWAP(self.sid, qi1, qi2)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def fsim(self, th, ph, qi1, qi2):
-        """Fsim gate.
-
-        The 2-qubit “fSim” gate
-        Useful in the simulation of particles with fermionic statistics
-
-        Args:
-            qi1: First position of qubit.
-            qi2: Second position of qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.FSim(
-            self.sid, ctypes.c_double(th), ctypes.c_double(ph), qi1, qi2
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def cswap(self, c, qi1, qi2):
-        """Controlled-swap Gate
-
-        Swaps the qubits at two given positions if the control qubits are `|1>`
-
-        Args:
-            c: list of controlled qubits.
-            qi1: First position of qubit.
-            qi2: Second position of qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.CSWAP(self.sid, len(c), self._ulonglong_byref(c), qi1, qi2)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    def acswap(self, c, qi1, qi2):
-        """Anti controlled-swap Gate
-
-        Swaps the qubits at two given positions if the control qubits are `|0>`
-
-        Args:
-            c: list of controlled qubits.
-            qi1: First position of qubit.
-            qi2: Second position of qubit.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-        """
-        Qrack.qrack_lib.ACSWAP(self.sid, len(c), self._ulonglong_byref(c), qi1, qi2)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-
-    # standard operations
-    def m(self, q):
-        """Measurement gate
-
-        Measures the qubit at "q" and returns Boolean value.
-        This operator is not unitary & is probabilistic in nature.
-
-        Args:
-            q: qubit to measure
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Measurement result.
-        """
-        result = Qrack.qrack_lib.M(self.sid, q)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def force_m(self, q, r):
-        """Force-Measurement gate
-
-        Acts as if the measurement is applied and the result obtained is `r`
-
-        Args:
-            q: qubit to measure
-            r: the required result
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Measurement result.
-        """
-        result = Qrack.qrack_lib.ForceM(self.sid, q, r)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def m_all(self):
-        """Measure-all gate
-
-        Measures measures all qubits.
-        This operator is not unitary & is probabilistic in nature.
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Measurement result of all qubits.
-        """
-        result = Qrack.qrack_lib.MAll(self.sid)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def measure_pauli(self, b, q):
-        """Pauli Measurement gate
-
-        Measures the qubit at "q" with the given pauli basis.
-        This operator is not unitary & is probabilistic in nature.
-
-        Args:
-            b: Pauli basis
-            q: qubit to measure
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            Measurement result.
-        """
-        result = Qrack.qrack_lib.Measure(
-            self.sid, len(b), self._ulonglong_byref(b), self._ulonglong_byref(q)
-        )
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return result
-
-    def measure_shots(self, q, s):
-        """Multi-shot measurement operator
-
-        Measures the qubit at "q" with the given pauli basis.
-        This operator is not unitary & is probabilistic in nature.
-
-        Args:
-            q: list of qubits to measure
-            s: number of shots
-
-        Raises:
-            RuntimeError: QrackSimulator raised an exception.
-
-        Returns:
-            list of measurement result.
-        """
-        m = self._ulonglong_byref([0] * s)
-        Qrack.qrack_lib.MeasureShots(self.sid, len(q), self._ulonglong_byref(q), s, m)
-        if self._get_error() != 0:
-            raise RuntimeError("QrackSimulator C++ library raised exception.")
-        return [m[i] for i in range(s)]
-
     def reset_all(self):
         """Reset gate
 
