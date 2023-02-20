@@ -73,6 +73,7 @@ pub type ProbAmpCallback =
 pub struct _QrackTimeEvolveOpHeader {
     _unused: [u8; 0],
 }
+#[link(name = "qrack_pinvoke")]
 extern "C" {
     pub fn get_error(sid: uintq) -> ::std::os::raw::c_int;
 }
