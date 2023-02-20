@@ -2108,8 +2108,13 @@ impl QrackSimulator {
         // Set state vector
         //
         // Set state vector for the selected simulator ID.
-        // Warning: State vector is not always the internal representation leading
+        //
+        // Warning: State vector is not always the internal representation, leading
         // to sub-optimal performance of the method.
+        //
+        // Note: By design of this interface layer between Rust and C++, Qrack
+        // cannot guarantee that your input ket is not insecurely mutated, but it
+        // "promises" you that it does not intend to ever mutate it.
         //
         // Args:
         //     ket(*mut f32): the state vector to which simulator will be set
@@ -2127,7 +2132,8 @@ impl QrackSimulator {
         // Get state vector
         //
         // Returns the raw state vector of the simulator.
-        // Warning: State vector is not always the internal representation leading
+        //
+        // Warning: State vector is not always the internal representation, leading
         // to sub-optimal performance of the method.
         //
         // Args:
