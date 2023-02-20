@@ -7,7 +7,7 @@ use pauli::Pauli;
 use qrack_error::QrackError;
 use qrack_system;
 
-struct QrackSimulator {
+pub struct QrackSimulator {
     // Interface for all the QRack functionality.
     //
     // Attributes:
