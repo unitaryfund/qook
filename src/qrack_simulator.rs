@@ -19,7 +19,7 @@ impl Clone for QrackSimulator {
     fn clone(&self) -> Self {
         let sid;
         unsafe {
-            sid = qrack_system::bindings::init_clone(self.sid);
+            sid = qrack_system::init_clone(self.sid);
         }
         Self{ sid }
     }
@@ -28,7 +28,7 @@ impl Clone for QrackSimulator {
 impl Drop for QrackSimulator {
     fn drop(&mut self) {
         unsafe {
-            qrack_system::bindings::destroy(self.sid);
+            qrack_system::destroy(self.sid);
         }
     }
 }
@@ -37,7 +37,7 @@ impl QrackSimulator {
     // private functions
     fn get_error(&self) -> i32 {
         unsafe {
-            qrack_system::bindings::get_error(self.sid)
+            qrack_system::get_error(self.sid)
         }
     }
     fn check_error(&self) -> Result<(), QrackError> {
@@ -51,8 +51,8 @@ impl QrackSimulator {
     pub fn new(qubit_count: u64) -> Result<Self, QrackError> {
         let sid;
         unsafe {
-            sid = qrack_system::bindings::init_count(qubit_count, false);
-            if qrack_system::bindings::get_error(sid) != 0 {
+            sid = qrack_system::init_count(qubit_count, false);
+            if qrack_system::get_error(sid) != 0 {
                 return Err(QrackError{});
             }
         }
@@ -77,16 +77,16 @@ impl QrackSimulator {
             && is_opencl {
             if is_schmidt_decompose_multi {
                 unsafe {
-                    sid = qrack_system::bindings::init_count(qubit_count, is_host_pointer);
+                    sid = qrack_system::init_count(qubit_count, is_host_pointer);
                 }
             } else {
                 unsafe {
-                    sid = qrack_system::bindings::init_count_pager(qubit_count, is_host_pointer);
+                    sid = qrack_system::init_count_pager(qubit_count, is_host_pointer);
                 }
             }
         } else {
             unsafe {
-                sid = qrack_system::bindings::init_count_type(qubit_count,
+                sid = qrack_system::init_count_type(qubit_count,
                                                               is_schmidt_decompose_multi,
                                                               is_schmidt_decompose,
                                                               is_stabilizer_hybrid,
@@ -100,7 +100,7 @@ impl QrackSimulator {
         }
 
         unsafe {
-            if qrack_system::bindings::get_error(sid) != 0 {
+            if qrack_system::get_error(sid) != 0 {
                 return Err(QrackError{});
             }
         }
@@ -110,14 +110,14 @@ impl QrackSimulator {
     // non-quantum
     pub fn seed(&self, s: u64) -> Result<(), QrackError> {
         unsafe {
-            qrack_system::bindings::seed(self.sid, s as qrack_system::bindings::uintq);
+            qrack_system::seed(self.sid, s as qrack_system::uintq);
         }
         self.check_error()
     }
 
     pub fn set_concurrency(&self, p: u64) -> Result<(), QrackError> {
         unsafe {
-            qrack_system::bindings::set_concurrency(self.sid, p as qrack_system::bindings::uintq);
+            qrack_system::set_concurrency(self.sid, p as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -138,7 +138,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::X(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::X(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -157,7 +157,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::Y(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::Y(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -175,7 +175,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::Z(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::Z(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -192,7 +192,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::H(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::H(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -209,7 +209,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::S(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::S(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -226,7 +226,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::T(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::T(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -243,7 +243,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::AdjS(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::AdjS(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -260,7 +260,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::AdjT(self.sid, q as qrack_system::bindings::uintq);
+            qrack_system::AdjT(self.sid, q as qrack_system::uintq);
         }
         self.check_error()
     }
@@ -283,7 +283,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::U(self.sid, q, th, ph, la);
+            qrack_system::U(self.sid, q, th, ph, la);
         }
         self.check_error()
     }
@@ -302,7 +302,7 @@ impl QrackSimulator {
 
         let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
         unsafe {
-            qrack_system::bindings::Mtrx(self.sid, _m.as_mut_ptr(), q);
+            qrack_system::Mtrx(self.sid, _m.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -321,7 +321,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::R(self.sid, b as u64, ph, q);
+            qrack_system::R(self.sid, b as u64, ph, q);
         }
         self.check_error()
     }
@@ -346,7 +346,7 @@ impl QrackSimulator {
         let mut _b = b.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::Exp(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, ph, _q.as_mut_ptr() as *mut u64);
+            qrack_system::Exp(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, ph, _q.as_mut_ptr() as *mut u64);
         }
         self.check_error()
     }
@@ -367,7 +367,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -387,7 +387,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -407,7 +407,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -427,7 +427,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -447,7 +447,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -467,7 +467,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -487,7 +487,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -507,7 +507,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCAdjT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCAdjT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -530,7 +530,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCU(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, th, ph, la);
+            qrack_system::MCU(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, th, ph, la);
         }
         self.check_error()
     }
@@ -552,7 +552,7 @@ impl QrackSimulator {
         let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
+            qrack_system::MCMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -571,7 +571,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACX(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -591,7 +591,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACY(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -611,7 +611,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACZ(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -631,7 +631,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACH(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -651,7 +651,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -671,7 +671,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -691,7 +691,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACAdjS(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -711,7 +711,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACAdjT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MACAdjT(self.sid, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -734,7 +734,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACU(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, th, ph, la);
+            qrack_system::MACU(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, th, ph, la);
         }
         self.check_error()
     }
@@ -756,7 +756,7 @@ impl QrackSimulator {
         let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MACMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
+            qrack_system::MACMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -778,7 +778,7 @@ impl QrackSimulator {
         let mut _c = c.to_vec();
         let mut _m = m.to_vec();
         unsafe {
-            qrack_system::bindings::Multiplex1Mtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, _m.as_mut_ptr());
+            qrack_system::Multiplex1Mtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), q, _m.as_mut_ptr());
         }
         self.check_error()
     }
@@ -796,7 +796,7 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::MX(self.sid, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::MX(self.sid, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -814,7 +814,7 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::MY(self.sid, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::MY(self.sid, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -832,7 +832,7 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::MZ(self.sid, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::MZ(self.sid, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -854,7 +854,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::MCR(self.sid, b as u64, ph, _c.len() as u64, _c.as_mut_ptr(), q);
+            qrack_system::MCR(self.sid, b as u64, ph, _c.len() as u64, _c.as_mut_ptr(), q);
         }
         self.check_error()
     }
@@ -880,7 +880,7 @@ impl QrackSimulator {
         let mut _cs = cs.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::MCExp(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, ph, _cs.len() as u64, _cs.as_mut_ptr(), _q.as_mut_ptr() as *mut u64);
+            qrack_system::MCExp(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, ph, _cs.len() as u64, _cs.as_mut_ptr(), _q.as_mut_ptr() as *mut u64);
         }
         self.check_error()
     }
@@ -898,7 +898,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::SWAP(self.sid, qi1, qi2);
+            qrack_system::SWAP(self.sid, qi1, qi2);
         }
         self.check_error()
     }
@@ -917,7 +917,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::ISWAP(self.sid, qi1, qi2);
+            qrack_system::ISWAP(self.sid, qi1, qi2);
         }
         self.check_error()
     }
@@ -936,7 +936,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::AdjISWAP(self.sid, qi1, qi2);
+            qrack_system::AdjISWAP(self.sid, qi1, qi2);
         }
         self.check_error()
     }
@@ -955,7 +955,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::FSim(self.sid, th, ph, qi1, qi2);
+            qrack_system::FSim(self.sid, th, ph, qi1, qi2);
         }
         self.check_error()
     }
@@ -975,7 +975,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::CSWAP(self.sid, _c.len() as u64, _c.as_mut_ptr(), qi1, qi2);
+            qrack_system::CSWAP(self.sid, _c.len() as u64, _c.as_mut_ptr(), qi1, qi2);
         }
         self.check_error()
     }
@@ -995,7 +995,7 @@ impl QrackSimulator {
 
         let mut _c = c.to_vec();
         unsafe {
-            qrack_system::bindings::ACSWAP(self.sid, _c.len() as u64, _c.as_mut_ptr(), qi1, qi2);
+            qrack_system::ACSWAP(self.sid, _c.len() as u64, _c.as_mut_ptr(), qi1, qi2);
         }
         self.check_error()
     }
@@ -1018,7 +1018,7 @@ impl QrackSimulator {
 
         let result:u64;
         unsafe {
-            result = qrack_system::bindings::M(self.sid, q);
+            result = qrack_system::M(self.sid, q);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -1043,7 +1043,7 @@ impl QrackSimulator {
 
         let result:u64;
         unsafe {
-            result = qrack_system::bindings::ForceM(self.sid, q, r);
+            result = qrack_system::ForceM(self.sid, q, r);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -1065,7 +1065,7 @@ impl QrackSimulator {
 
         let result:u64;
         unsafe {
-            result = qrack_system::bindings::MAll(self.sid);
+            result = qrack_system::MAll(self.sid);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -1096,7 +1096,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let result:u64;
         unsafe {
-            result = qrack_system::bindings::Measure(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, _q.as_mut_ptr());
+            result = qrack_system::Measure(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, _q.as_mut_ptr());
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -1123,7 +1123,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut result = vec![0;s as usize];
         unsafe {
-            qrack_system::bindings::MeasureShots(self.sid, _q.len() as u64, _q.as_mut_ptr(), s, result.as_mut_ptr());
+            qrack_system::MeasureShots(self.sid, _q.len() as u64, _q.as_mut_ptr(), s, result.as_mut_ptr());
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -1140,7 +1140,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::ResetAll(self.sid);
+            qrack_system::ResetAll(self.sid);
         }
         self.check_error()
     }
@@ -1161,7 +1161,7 @@ impl QrackSimulator {
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::ADD(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::ADD(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1181,7 +1181,7 @@ impl QrackSimulator {
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::SUB(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::SUB(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1203,7 +1203,7 @@ impl QrackSimulator {
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::ADDS(self.sid, _a.len() as u64, _a.as_mut_ptr(), s, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::ADDS(self.sid, _a.len() as u64, _a.as_mut_ptr(), s, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1225,7 +1225,7 @@ impl QrackSimulator {
         let mut _a = a.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::SUBS(self.sid, _a.len() as u64, _a.as_mut_ptr(), s, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::SUBS(self.sid, _a.len() as u64, _a.as_mut_ptr(), s, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1252,7 +1252,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MUL(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MUL(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1280,7 +1280,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::DIV(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::DIV(self.sid, _a.len() as u64, _a.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1311,7 +1311,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MULN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MULN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1343,7 +1343,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::DIVN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::DIVN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1374,7 +1374,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::POWN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::POWN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1397,7 +1397,7 @@ impl QrackSimulator {
         let mut _c = c.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::MCADD(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::MCADD(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1420,7 +1420,7 @@ impl QrackSimulator {
         let mut _c = c.to_vec();
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::MCSUB(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::MCSUB(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1450,7 +1450,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MCMUL(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MCMUL(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1480,7 +1480,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MCDIV(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MCDIV(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1514,7 +1514,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MCMULN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MCMULN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1549,7 +1549,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MCDIVN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MCDIVN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1583,7 +1583,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _o = o.to_vec();
         unsafe {
-            qrack_system::bindings::MCPOWN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
+            qrack_system::MCPOWN(self.sid, _a.len() as u64, _a.as_mut_ptr(), _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), _q.len() as u64, _q.as_mut_ptr(), _o.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1610,7 +1610,7 @@ impl QrackSimulator {
         let mut _qv = qv.to_vec();
         let mut _t = t.to_vec();
         unsafe {
-            qrack_system::bindings::LDA(self.sid, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
+            qrack_system::LDA(self.sid, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1636,7 +1636,7 @@ impl QrackSimulator {
         let mut _qv = qv.to_vec();
         let mut _t = t.to_vec();
         unsafe {
-            qrack_system::bindings::ADC(self.sid, s, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
+            qrack_system::ADC(self.sid, s, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1662,7 +1662,7 @@ impl QrackSimulator {
         let mut _qv = qv.to_vec();
         let mut _t = t.to_vec();
         unsafe {
-            qrack_system::bindings::SBC(self.sid, s, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
+            qrack_system::SBC(self.sid, s, _qi.len() as u64, _qi.as_mut_ptr(), _qv.len() as u64, _qv.as_mut_ptr(), _t.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1687,7 +1687,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let mut _t = t.to_vec();
         unsafe {
-            qrack_system::bindings::Hash(self.sid, _q.len() as u64, _q.as_mut_ptr(), _t.as_mut_ptr());
+            qrack_system::Hash(self.sid, _q.len() as u64, _q.as_mut_ptr(), _t.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1707,7 +1707,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::AND(self.sid, qi1, qi2, qo);
+            qrack_system::AND(self.sid, qi1, qi2, qo);
         }
         self.check_error()
     }
@@ -1726,7 +1726,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::OR(self.sid, qi1, qi2, qo);
+            qrack_system::OR(self.sid, qi1, qi2, qo);
         }
         self.check_error()
     }
@@ -1745,7 +1745,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::XOR(self.sid, qi1, qi2, qo);
+            qrack_system::XOR(self.sid, qi1, qi2, qo);
         }
         self.check_error()
     }
@@ -1764,7 +1764,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::NAND(self.sid, qi1, qi2, qo);
+            qrack_system::NAND(self.sid, qi1, qi2, qo);
         }
         self.check_error()
     }
@@ -1783,7 +1783,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::NOR(self.sid, qi1, qi2, qo);
+            qrack_system::NOR(self.sid, qi1, qi2, qo);
         }
         self.check_error()
     }
@@ -1802,7 +1802,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::XNOR(self.sid, qi1, qi2, qo);
+            qrack_system::XNOR(self.sid, qi1, qi2, qo);
         }
         self.check_error()
     }
@@ -1822,7 +1822,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::CLAND(self.sid, ci, qi, qo);
+            qrack_system::CLAND(self.sid, ci, qi, qo);
         }
         self.check_error()
     }
@@ -1842,7 +1842,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::CLOR(self.sid, ci, qi, qo);
+            qrack_system::CLOR(self.sid, ci, qi, qo);
         }
         self.check_error()
     }
@@ -1862,7 +1862,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::CLXOR(self.sid, ci, qi, qo);
+            qrack_system::CLXOR(self.sid, ci, qi, qo);
         }
         self.check_error()
     }
@@ -1882,7 +1882,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::CLNAND(self.sid, ci, qi, qo);
+            qrack_system::CLNAND(self.sid, ci, qi, qo);
         }
         self.check_error()
     }
@@ -1902,7 +1902,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::CLNOR(self.sid, ci, qi, qo);
+            qrack_system::CLNOR(self.sid, ci, qi, qo);
         }
         self.check_error()
     }
@@ -1922,7 +1922,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::CLXNOR(self.sid, ci, qi, qo);
+            qrack_system::CLXNOR(self.sid, ci, qi, qo);
         }
         self.check_error()
     }
@@ -1943,7 +1943,7 @@ impl QrackSimulator {
 
         let mut _qs = qs.to_vec();
         unsafe {
-            qrack_system::bindings::QFT(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
+            qrack_system::QFT(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1962,7 +1962,7 @@ impl QrackSimulator {
 
         let mut _qs = qs.to_vec();
         unsafe {
-            qrack_system::bindings::IQFT(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
+            qrack_system::IQFT(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
         }
         self.check_error()
     }
@@ -1982,7 +1982,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::allocateQubit(self.sid, qid);
+            qrack_system::allocateQubit(self.sid, qid);
         }
         self.check_error()
     }
@@ -2003,7 +2003,7 @@ impl QrackSimulator {
 
         let result:bool;
         unsafe {
-            result = qrack_system::bindings::release(self.sid, q);
+            result = qrack_system::release(self.sid, q);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2025,7 +2025,7 @@ impl QrackSimulator {
 
         let result:u64;
         unsafe {
-            result = qrack_system::bindings::num_qubits(self.sid);
+            result = qrack_system::num_qubits(self.sid);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2048,7 +2048,7 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::Compose(self.sid, other.sid, _q.as_mut_ptr());
+            qrack_system::Compose(self.sid, other.sid, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -2071,11 +2071,11 @@ impl QrackSimulator {
 
         let mut other = QrackSimulator::new(0).unwrap();
         unsafe {
-            qrack_system::bindings::destroy(other.sid);
+            qrack_system::destroy(other.sid);
         }
         let mut _q = q.to_vec();
         unsafe {
-            other.sid = qrack_system::bindings::Decompose(self.sid, _q.len() as u64, _q.as_mut_ptr());
+            other.sid = qrack_system::Decompose(self.sid, _q.len() as u64, _q.as_mut_ptr());
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2099,7 +2099,7 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::Dispose(self.sid, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::Dispose(self.sid, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -2123,7 +2123,7 @@ impl QrackSimulator {
         //     RuntimeError: Not implemented for the given builds.
 
         unsafe {
-            qrack_system::bindings::InKet(self.sid, ket);
+            qrack_system::InKet(self.sid, ket);
         }
         self.check_error()
     }
@@ -2143,7 +2143,7 @@ impl QrackSimulator {
         //     RuntimeError: Not implemented for the given builds.
 
         unsafe {
-            qrack_system::bindings::OutKet(self.sid, ket);
+            qrack_system::OutKet(self.sid, ket);
         }
         self.check_error()
     }
@@ -2164,7 +2164,7 @@ impl QrackSimulator {
 
         let result:f64;
         unsafe {
-            result = qrack_system::bindings::Prob(self.sid, q);
+            result = qrack_system::Prob(self.sid, q);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2190,7 +2190,7 @@ impl QrackSimulator {
         let mut _c = c.to_vec();
         let result:f64;
         unsafe {
-            result = qrack_system::bindings::PermutationExpectation(self.sid, _c.len() as u64, _c.as_mut_ptr());
+            result = qrack_system::PermutationExpectation(self.sid, _c.len() as u64, _c.as_mut_ptr());
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2221,7 +2221,7 @@ impl QrackSimulator {
         let mut _q = q.to_vec();
         let result:f64;
         unsafe {
-            result = qrack_system::bindings::JointEnsembleProbability(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, _q.as_mut_ptr());
+            result = qrack_system::JointEnsembleProbability(self.sid, _b.len() as u64, _b.as_mut_ptr() as *mut i32, _q.as_mut_ptr());
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2244,7 +2244,7 @@ impl QrackSimulator {
 
         let mut _q = q.to_vec();
         unsafe {
-            qrack_system::bindings::PhaseParity(self.sid, la, _q.len() as u64, _q.as_mut_ptr());
+            qrack_system::PhaseParity(self.sid, la, _q.len() as u64, _q.as_mut_ptr());
         }
         self.check_error()
     }
@@ -2266,7 +2266,7 @@ impl QrackSimulator {
 
         let result:bool;
         unsafe {
-            result = qrack_system::bindings::TrySeparate1Qb(self.sid, qi1);
+            result = qrack_system::TrySeparate1Qb(self.sid, qi1);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2291,7 +2291,7 @@ impl QrackSimulator {
 
         let result:bool;
         unsafe {
-            result = qrack_system::bindings::TrySeparate2Qb(self.sid, qi1, qi2);
+            result = qrack_system::TrySeparate2Qb(self.sid, qi1, qi2);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2317,7 +2317,7 @@ impl QrackSimulator {
         let mut _qs = qs.to_vec();
         let result:bool;
         unsafe {
-            result = qrack_system::bindings::TrySeparateTol(self.sid, _qs.len() as u64, _qs.as_mut_ptr(), t);
+            result = qrack_system::TrySeparateTol(self.sid, _qs.len() as u64, _qs.as_mut_ptr(), t);
         }
         if self.get_error() != 0 {
             return Err(QrackError{});
@@ -2338,7 +2338,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::SetReactiveSeparate(self.sid, irs);
+            qrack_system::SetReactiveSeparate(self.sid, irs);
         }
         self.check_error()
     }
@@ -2356,7 +2356,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
 
         unsafe {
-            qrack_system::bindings::SetTInjection(self.sid, iti);
+            qrack_system::SetTInjection(self.sid, iti);
         }
         self.check_error()
     }

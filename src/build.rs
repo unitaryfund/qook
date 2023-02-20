@@ -29,9 +29,8 @@ fn main() {
         // Unwrap the Result and panic on failure.
         .expect("Unable to generate bindings");
 
-    // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from("qrack_system");
+    // Write the bindings to the qrack_system.rs file.
     bindings
-        .write_to_file(out_path.join("bindings.rs"))
+        .write_to_file(out_path.join("qrack_system.rs"))
         .expect("Couldn't write bindings!");
 }
