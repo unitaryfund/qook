@@ -9,7 +9,7 @@ A future release will likely include packaged Qrack binaries; for now, you must 
 
 Import and instantiate [`QrackSimulator`](https://github.com/unitaryfund/qook/blob/main/src/qrack_simulator.rs) instances. This simulator can perform arbitrary single qubit and controlled-single-qubit gates, as well as other specific gates like `SWAP`.
 
-Any 2x2 bit operator matrix is represented by a list of 4 `complex` floating point numbers, in [**row-major order**](https://en.wikipedia.org/wiki/Row-_and_column-major_order).
+Any 2x2 bit operator matrix is represented by an array of 8 (real) floating point numbers, grouped in immediate pairs of real then imaginary components of complex numbers, then in [**row-major order**](https://en.wikipedia.org/wiki/Row-_and_column-major_order).
 
 Single and array "`b`" parameters represent [**Pauli operator bases**](https://en.wikipedia.org/wiki/Pauli_matrices). They are specified according to the enumeration of the [`Pauli`](https://github.com/unitaryfund/qook/blob/main/src/pauli.rs) class.
 
