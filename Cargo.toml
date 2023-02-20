@@ -1,6 +1,17 @@
 [package]
 name = "qook"
 version = "0.1.0"
+license = "MIT License"
+license-file = "LICENSE"
+description = "qook - Pure Rust unitaryfund/qrack Wrapper"
+documentation = "https://pyqrack.readthedocs.io/en/latest/"
+readme = "README.md"
+homepage = "https://github.com/unitaryfund/qook"
+repository = "https://github.com/unitaryfund/qook"
+keywords = ["quantum", "qrack", "gpu", "hpc", "c++"]
+categories = ["api-bindings", "emulators", "science", "simulation"]
+links = "qrack_invoke"
+build = "src/build.rs"
 
 [build-dependencies]
 bindgen = "0.53.1"
