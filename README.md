@@ -11,7 +11,7 @@ Import and instantiate [`QrackSimulator`](https://github.com/unitaryfund/qook/bl
 
 Any 2x2 bit operator matrix is represented by an array of 8 (real) floating point numbers, grouped in immediate pairs of real then imaginary components of complex numbers, then in [**row-major order**](https://en.wikipedia.org/wiki/Row-_and_column-major_order).
 
-Single and array "`b`" parameters represent [**Pauli operator bases**](https://en.wikipedia.org/wiki/Pauli_matrices). They are specified according to the enumeration of the [`Pauli`](https://github.com/unitaryfund/qook/blob/main/src/pauli.rs) class.
+Primitive and vector "`b`" parameters represent [**Pauli operator bases**](https://en.wikipedia.org/wiki/Pauli_matrices). They are specified according to the enumeration of the [`Pauli`](https://github.com/unitaryfund/qook/blob/main/src/pauli.rs) class.
 
 `MC[x]` and `MAC[x]` methods are controlled single bit gates, with as many control qubits as you specify via the Rust vector `c` argument. `MCX` is multiply-controlled Pauli X, and `MACX` is "anti-"controlled Pauli X, i.e. "anti-control" activates the gate if all control bits are specifically **off**, as opposed to **on**.
 
