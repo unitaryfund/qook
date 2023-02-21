@@ -15,7 +15,7 @@ Primitive and vector "`b`" parameters represent [**Pauli operator bases**](https
 
 `MC[x]` and `MAC[x]` methods are controlled single bit gates, with as many control qubits as you specify via the Rust vector `c` argument. `MCX` is multiply-controlled Pauli X, and `MACX` is "anti-"controlled Pauli X, i.e. "anti-control" activates the gate if all control bits are specifically **off**, as opposed to **on**.
 
-The Qrack installation binary directory contains a `qrack_cl_precompile` folder with executables for your platform, to compile OpenCL kernels once, beforehand, avoiding the need to recompile "just-in-time" every time that you load this library in a binary executable. If you no longer want to use precompiled kernels, or if precompilation fails, just delete the `~/.qrack` directory, or the equivalent `.qrack` sub-directory in the user home folder of your operating system.
+The Qrack installation binary directory contains a `qrack_cl_precompile` executable for your platform, to compile OpenCL kernels once, beforehand, avoiding the need to recompile "just-in-time" every time that you load this library in a binary executable. If you no longer want to use precompiled kernels, or if precompilation fails, just delete the `~/.qrack` directory, or the equivalent `.qrack` sub-directory in the user home folder of your operating system.
 
 The API is meant to exactly mirror (Python-based) PyQrack. See [https://pyqrack.readthedocs.io/en/latest/](https://pyqrack.readthedocs.io/en/latest/) for an API reference.
 
