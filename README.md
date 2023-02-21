@@ -3,7 +3,7 @@ Pure language standard, "safe" Rust bindings for the pure C++11/OpenCL Qrack qua
 
 (**Qook** is just pure Qrack.)
 
-To use this package, it's helpful to be familiar with [unitaryfund/qrack](https://github.com/unitaryfund/qrack). Users gain **much** more control over options by building **unitaryfund/qrack** and  from source.
+To use this package, it's helpful to be familiar with [unitaryfund/qrack](https://github.com/unitaryfund/qrack). Users gain **much** more control over options by building **unitaryfund/qrack** from source.
 
 A future release might include packaged Qrack binaries; for now, you must build and install Qrack from source in order to use this library crate. (See the Qrack README for instructions.) `cargo` will dynamically link [`qook`](https://github.com/unitaryfund/qook) against your system installation of Qrack.
 
