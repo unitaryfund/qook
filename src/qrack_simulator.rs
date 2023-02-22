@@ -2104,7 +2104,7 @@ impl QrackSimulator {
         self.check_error()
     }
 
-    pub fn in_ket(&self, ket: *mut f32) -> Result<(), QrackError> {
+    // pub fn in_ket(&self, ket: *mut f32) -> Result<(), QrackError> {
         // Set state vector
         //
         // Set state vector for the selected simulator ID.
@@ -2122,13 +2122,13 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: Not implemented for the given builds.
 
-        unsafe {
-            qrack_system::InKet(self.sid, ket);
-        }
-        self.check_error()
-    }
+    //     unsafe {
+    //         qrack_system::InKet(self.sid, ket);
+    //     }
+    //     self.check_error()
+    // }
 
-    pub fn out_ket(self, ket: *mut f32) -> Result<(), QrackError> {
+    // pub fn out_ket(self, ket: *mut f32) -> Result<(), QrackError> {
         // Get state vector
         //
         // Returns the raw state vector of the simulator.
@@ -2142,11 +2142,11 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: Not implemented for the given builds.
 
-        unsafe {
-            qrack_system::OutKet(self.sid, ket);
-        }
-        self.check_error()
-    }
+    //     unsafe {
+    //         qrack_system::OutKet(self.sid, ket);
+    //     }
+    //     self.check_error()
+    // }
 
     pub fn prob(&self, q: u64) -> Result<f64, QrackError> {
         // Probability of `|1>`
