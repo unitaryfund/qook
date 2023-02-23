@@ -113,6 +113,9 @@ extern "C" {
     pub fn Prob(sid: uintq, q: uintq) -> f64;
 }
 extern "C" {
+    pub fn PermutationProb(sid: uintq, n: uintq, q: *mut uintq, c: *mut bool) -> f64;
+}
+extern "C" {
     pub fn PermutationExpectation(sid: uintq, n: uintq, c: *mut uintq) -> f64;
 }
 extern "C" {

@@ -2148,6 +2148,35 @@ impl QrackSimulator {
     //     self.check_error()
     // }
 
+    pub fn prob_perm(&self, q: Vec<u64>, c: Vec<bool>) -> Result<f64, QrackError> {
+        // Probability of permutation
+        //
+        // Get the probability that the qubit IDs in "q" have the truth values
+        // in "c", directly corresponding by vector index.
+        //
+        // Args:
+        //    q(Vec<u64>): qubit ids
+        //    c(Vec<bool>): qubit truth values
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     probability that each qubit in "q[i]" has corresponding truth
+        //     value in "c[i]", at once
+
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+        let result:f64;
+        unsafe {
+            result = qrack_system::PermutationProb(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr());
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
     pub fn prob(&self, q: u64) -> Result<f64, QrackError> {
         // Probability of `|1>`
         //
