@@ -2165,6 +2165,9 @@ impl QrackSimulator {
         //     probability that each qubit in "q[i]" has corresponding truth
         //     value in "c[i]", at once
 
+        if q.len() != c.len() {
+            return Err(QrackError{});
+        }
         let mut _q = q.to_vec();
         let mut _c = c.to_vec();
         let result:f64;
