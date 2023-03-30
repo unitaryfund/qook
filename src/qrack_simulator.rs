@@ -2357,6 +2357,53 @@ impl QrackSimulator {
         Ok(result)
     }
 
+    pub fn get_unitary_fidelity(&self) -> Result<f64, QrackError> {
+        // Get fidelity estimate
+        //
+        // When using "Schmidt decomposition rounding parameter" ("SDRP")
+        // approximate simulation, QrackSimulator() can make an excellent
+        // estimate of its overall fidelity at any time, tested against a
+        // nearest-neighbor variant of quantum volume circuits.
+        //
+        // Resetting the fidelity calculation to 1.0 happens automatically
+        // when calling `mall` are can be done manually with
+        // `reset_unitary_fidelity()`.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Fidelity estimate
+        let result:f64;
+        unsafe {
+            result = qrack_system::GetUnitaryFidelity(self.sid);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn reset_unitary_fidelity(&self) -> Result<(), QrackError> {
+        // Reset fidelity estimate
+        //
+        // When using "Schmidt decomposition rounding parameter" ("SDRP")
+        // approximate simulation, QrackSimulator() can make an excellent
+        // estimate of its overall fidelity at any time, tested against a
+        // nearest-neighbor variant of quantum volume circuits.
+        //
+        // Resetting the fidelity calculation to 1.0 happens automatically
+        // when calling `mall` are can be done manually with
+        // `reset_unitary_fidelity()`.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        unsafe {
+            qrack_system::ResetUnitaryFidelity(self.sid);
+        }
+        self.check_error()
+    }
+
     pub fn set_reactive_separate(&self, irs: bool) -> Result<(), QrackError> {
         // Set reactive separation option
         //

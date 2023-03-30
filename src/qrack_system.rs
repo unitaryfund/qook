@@ -543,6 +543,12 @@ extern "C" {
     pub fn TrySeparateTol(sid: uintq, n: uintq, q: *mut uintq, tol: f64) -> bool;
 }
 extern "C" {
+    pub fn GetUnitaryFidelity(sid: uintq) -> f64;
+}
+extern "C" {
+    pub fn ResetUnitaryFidelity(sid: uintq);
+}
+extern "C" {
     pub fn SetReactiveSeparate(sid: uintq, irs: bool);
 }
 extern "C" {
