@@ -2393,13 +2393,33 @@ impl QrackSimulator {
         // nearest-neighbor variant of quantum volume circuits.
         //
         // Resetting the fidelity calculation to 1.0 happens automatically
-        // when calling `mall` are can be done manually with
+        // when calling `m_all` are can be done manually with
         // `reset_unitary_fidelity()`.
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
         unsafe {
             qrack_system::ResetUnitaryFidelity(self.sid);
+        }
+        self.check_error()
+    }
+
+    pub fn set_sdrp(&self, sdrp: f64) -> Result<(), QrackError> {
+        // Reset fidelity estimate
+        //
+        // When using "Schmidt decomposition rounding parameter" ("SDRP")
+        // approximate simulation, QrackSimulator() can make an excellent
+        // estimate of its overall fidelity at any time, tested against a
+        // nearest-neighbor variant of quantum volume circuits.
+        //
+        // Resetting the fidelity calculation to 1.0 happens automatically
+        // when calling `m_all` are can be done manually with
+        // `reset_unitary_fidelity()`.
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        unsafe {
+            qrack_system::SetSdrp(self.sid, sdrp);
         }
         self.check_error()
     }

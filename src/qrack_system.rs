@@ -549,6 +549,9 @@ extern "C" {
     pub fn ResetUnitaryFidelity(sid: uintq);
 }
 extern "C" {
+    pub fn SetSdrp(sid: uintq, sdrp: f64);
+}
+extern "C" {
     pub fn SetReactiveSeparate(sid: uintq, irs: bool);
 }
 extern "C" {
