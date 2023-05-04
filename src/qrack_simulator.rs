@@ -108,6 +108,10 @@ impl QrackSimulator {
     }
 
     // non-quantum
+    pub fn get_sid(&self) -> u64 {
+        return self.sid;
+    }
+
     pub fn seed(&self, s: u64) -> Result<(), QrackError> {
         unsafe {
             qrack_system::seed(self.sid, s as qrack_system::uintq);

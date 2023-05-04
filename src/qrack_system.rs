@@ -567,3 +567,53 @@ extern "C" {
         mtrx: *mut f64,
     );
 }
+extern "C" {
+    pub fn init_qneuron(
+        sid: uintq,
+        n: uintq,
+        c: *mut uintq,
+        q: uintq,
+        f: uintq,
+        a: f64,
+        tol: f64,
+    ) -> uintq;
+}
+extern "C" {
+    pub fn clone_qneuron(nid: uintq) -> uintq;
+}
+extern "C" {
+    pub fn destroy_qneuron(nid: uintq);
+}
+extern "C" {
+    pub fn set_qneuron_angles(nid: uintq, angles: *mut f32);
+}
+extern "C" {
+    pub fn get_qneuron_angles(nid: uintq, angles: *mut f32);
+}
+extern "C" {
+    pub fn set_qneuron_alpha(nid: uintq, alpha: f64);
+}
+extern "C" {
+    pub fn get_qneuron_alpha(nid: uintq) -> f64;
+}
+extern "C" {
+    pub fn set_qneuron_activation_fn(nid: uintq, f: uintq);
+}
+extern "C" {
+    pub fn get_qneuron_activation_fn(nid: uintq) -> uintq;
+}
+extern "C" {
+    pub fn qneuron_predict(nid: uintq, e: bool, r: bool) -> f64;
+}
+extern "C" {
+    pub fn qneuron_unpredict(nid: uintq, e: bool) -> f64;
+}
+extern "C" {
+    pub fn qneuron_learn_cycle(nid: uintq, e: bool) -> f64;
+}
+extern "C" {
+    pub fn qneuron_learn(nid: uintq, eta: f64, e: bool, r: bool);
+}
+extern "C" {
+    pub fn qneuron_learn_permutation(nid: uintq, eta: f64, e: bool, r: bool);
+}
