@@ -122,6 +122,10 @@ impl QrackNeuron<'_> {
         })
     }
 
+    pub fn get_simulator(&self) -> &QrackSimulator {
+        self.simulator
+    }
+
     pub fn set_angles(&self, a: Vec<f32>) -> Result<(), QrackError> {
         // Directly sets the neuron parameters.
         //
