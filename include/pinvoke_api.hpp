@@ -120,6 +120,9 @@ MICROSOFT_QUANTUM_DECL void MACU(_In_ uintq sid, _In_ uintq n, _In_reads_(n) uin
 MICROSOFT_QUANTUM_DECL void MACMtrx(
     _In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* c, _In_reads_(8) double* m, _In_ uintq q);
 
+MICROSOFT_QUANTUM_DECL void UCMtrx(
+    _In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* c, _In_reads_(8) double* m, _In_ uintq q, _In_ uintq p);
+
 MICROSOFT_QUANTUM_DECL void Multiplex1Mtrx(
     _In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* c, _In_ uintq q, double* m);
 
@@ -247,12 +250,9 @@ MICROSOFT_QUANTUM_DECL void destroy_qneuron(_In_ uintq nid);
 #if FPPOW < 6
 MICROSOFT_QUANTUM_DECL void set_qneuron_angles(_In_ uintq nid, _In_ float* angles);
 MICROSOFT_QUANTUM_DECL void get_qneuron_angles(_In_ uintq nid, _In_ float* angles);
-#elif FPPOW < 7
+#else
 MICROSOFT_QUANTUM_DECL void set_qneuron_angles(_In_ uintq nid, _In_ double* angles);
 MICROSOFT_QUANTUM_DECL void get_qneuron_angles(_In_ uintq nid, _In_ double* angles);
-#else
-MICROSOFT_QUANTUM_DECL void set_qneuron_angles(_In_ uintq nid, _In_ boost::multiprecision::float128* angles);
-MICROSOFT_QUANTUM_DECL void get_qneuron_angles(_In_ uintq nid, _In_ boost::multiprecision::float128* angles);
 #endif
 
 MICROSOFT_QUANTUM_DECL void set_qneuron_alpha(_In_ uintq nid, _In_ double alpha);
@@ -268,4 +268,16 @@ MICROSOFT_QUANTUM_DECL double qneuron_learn_cycle(_In_ uintq nid, _In_ bool e);
 
 MICROSOFT_QUANTUM_DECL void qneuron_learn(_In_ uintq nid, _In_ double eta, _In_ bool e, _In_ bool r);
 MICROSOFT_QUANTUM_DECL void qneuron_learn_permutation(_In_ uintq nid, _In_ double eta, _In_ bool e, _In_ bool r);
+
+MICROSOFT_QUANTUM_DECL uintq init_qcircuit();
+MICROSOFT_QUANTUM_DECL uintq init_qcircuit_clone(_In_ uintq cid);
+MICROSOFT_QUANTUM_DECL void destroy_qcircuit(_In_ uintq cid);
+MICROSOFT_QUANTUM_DECL uintq get_qcircuit_qubit_count(_In_ uintq cid);
+MICROSOFT_QUANTUM_DECL void qcircuit_swap(_In_ uintq cid, _In_ uintq q1, _In_ uintq q2);
+MICROSOFT_QUANTUM_DECL void qcircuit_append_1qb(_In_ uintq cid, _In_reads_(8) double* m, _In_ uintq q);
+MICROSOFT_QUANTUM_DECL void qcircuit_append_mc(
+    _In_ uintq cid, _In_reads_(8) double* m, _In_ uintq n, _In_reads_(n) uintq* c, _In_ uintq q, _In_ uintq p);
+MICROSOFT_QUANTUM_DECL void qcircuit_run(_In_ uintq cid, _In_ uintq sid);
+MICROSOFT_QUANTUM_DECL void qcircuit_out_to_file(_In_ uintq cid, _In_ char* f);
+MICROSOFT_QUANTUM_DECL void qcircuit_in_from_file(_In_ uintq cid, _In_ char* f);
 }

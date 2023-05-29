@@ -5,3 +5,4 @@ pub mod qrack_error;
 pub mod qrack_system;
 pub mod qrack_simulator;
 pub mod qrack_neuron;
+pub mod qrack_circuit;

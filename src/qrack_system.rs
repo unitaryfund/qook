@@ -247,6 +247,9 @@ extern "C" {
     pub fn MACMtrx(sid: uintq, n: uintq, c: *mut uintq, m: *mut f64, q: uintq);
 }
 extern "C" {
+    pub fn UCMtrx(sid: uintq, n: uintq, c: *mut uintq, m: *mut f64, q: uintq, p: uintq);
+}
+extern "C" {
     pub fn Multiplex1Mtrx(sid: uintq, n: uintq, c: *mut uintq, q: uintq, m: *mut f64);
 }
 extern "C" {
@@ -616,4 +619,34 @@ extern "C" {
 }
 extern "C" {
     pub fn qneuron_learn_permutation(nid: uintq, eta: f64, e: bool, r: bool);
+}
+extern "C" {
+    pub fn init_qcircuit() -> uintq;
+}
+extern "C" {
+    pub fn init_qcircuit_clone(cid: uintq) -> uintq;
+}
+extern "C" {
+    pub fn destroy_qcircuit(cid: uintq);
+}
+extern "C" {
+    pub fn get_qcircuit_qubit_count(cid: uintq) -> uintq;
+}
+extern "C" {
+    pub fn qcircuit_swap(cid: uintq, q1: uintq, q2: uintq);
+}
+extern "C" {
+    pub fn qcircuit_append_1qb(cid: uintq, m: *mut f64, q: uintq);
+}
+extern "C" {
+    pub fn qcircuit_append_mc(cid: uintq, m: *mut f64, n: uintq, c: *mut uintq, q: uintq, p: uintq);
+}
+extern "C" {
+    pub fn qcircuit_run(cid: uintq, sid: uintq);
+}
+extern "C" {
+    pub fn qcircuit_out_to_file(cid: uintq, f: *mut ::std::os::raw::c_char);
+}
+extern "C" {
+    pub fn qcircuit_in_from_file(cid: uintq, f: *mut ::std::os::raw::c_char);
 }

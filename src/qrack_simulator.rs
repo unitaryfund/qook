@@ -34,19 +34,6 @@ impl Drop for QrackSimulator {
 }
 
 impl QrackSimulator {
-    // private functions
-    fn get_error(&self) -> i32 {
-        unsafe {
-            qrack_system::get_error(self.sid)
-        }
-    }
-    fn check_error(&self) -> Result<(), QrackError> {
-        if self.get_error() != 0 {
-            return Err(QrackError{});
-        }
-        return Ok(());
-    }
-
     // constructors
     pub fn new(qubit_count: u64) -> Result<Self, QrackError> {
         let sid;
@@ -108,8 +95,21 @@ impl QrackSimulator {
     }
 
     // non-quantum
+    pub fn get_error(&self) -> i32 {
+        unsafe {
+            qrack_system::get_error(self.sid)
+        }
+    }
+
+    pub fn check_error(&self) -> Result<(), QrackError> {
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        return Ok(())
+    }
+
     pub fn get_sid(&self) -> u64 {
-        return self.sid;
+        return self.sid
     }
 
     pub fn seed(&self, s: u64) -> Result<(), QrackError> {
@@ -761,6 +761,29 @@ impl QrackSimulator {
         let mut _c = c.to_vec();
         unsafe {
             qrack_system::MACMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q);
+        }
+        self.check_error()
+    }
+
+    pub fn ucmtrx(&self, c: Vec<u64>, m: &[f64;8], q: u64, p: u64) -> Result<(), QrackError> {
+        // Multi-controlled arbitrary operator with arbitrary controls
+        //
+        // If all control qubits match 'p' permutation by bit order, then the arbitrary
+        // operation by parameters is applied to the target qubit.
+        //
+        // Args:
+        //     c(Vec<u64>): list of controlled qubits
+        //     m(&[f64;8]): row-major complex list representing the operator.
+        //     q(u64): target qubit
+        //     p(u64): permutation of list of control qubits
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        let mut _m = [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
+        let mut _c = c.to_vec();
+        unsafe {
+            qrack_system::UCMtrx(self.sid, _c.len() as u64, _c.as_mut_ptr(), _m.as_mut_ptr(), q, p);
         }
         self.check_error()
     }
