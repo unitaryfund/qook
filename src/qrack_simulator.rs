@@ -2469,6 +2469,24 @@ impl QrackSimulator {
         self.check_error()
     }
 
+    pub fn set_weak_sampling(&self, sws: bool) -> Result<(), QrackError> {
+        // Set reactive separation option
+        //
+        // If reactive separation is available, then this method turns it off/on.
+        // Note that reactive separation is on by default.
+        //
+        // Args:
+        //     irs(bool): on/off for aggressive separation
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::SetStabilizerWeakSampling(self.sid, sws);
+        }
+        self.check_error()
+    }
+
     pub fn set_t_injection(self, iti: bool) -> Result<(), QrackError> {
         // Set t-injection option
         //

@@ -55,7 +55,7 @@ impl QrackCircuit {
     pub fn new() -> Self {
         let cid;
         unsafe {
-            cid = qrack_system::init_qcircuit();
+            cid = qrack_system::init_qcircuit(false);
         }
         Self{cid}
     }

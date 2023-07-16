@@ -16,6 +16,7 @@ pub const FPPOW: u32 = 5;
 pub const PSTRIDEPOW: u32 = 11;
 pub const QBCAPPOW: u32 = 12;
 pub const UINTPOW: u32 = 6;
+pub const CPP_STD: u32 = 14;
 pub type size_t = ::std::os::raw::c_ulong;
 #[repr(C)]
 #[repr(align(16))]
@@ -108,6 +109,12 @@ extern "C" {
 }
 extern "C" {
     pub fn set_concurrency(sid: uintq, p: uintq);
+}
+extern "C" {
+    pub fn qstabilizer_out_to_file(sid: uintq, f: *mut ::std::os::raw::c_char);
+}
+extern "C" {
+    pub fn qstabilizer_in_from_file(sid: uintq, f: *mut ::std::os::raw::c_char);
 }
 extern "C" {
     pub fn Prob(sid: uintq, q: uintq) -> f64;
@@ -561,6 +568,9 @@ extern "C" {
     pub fn SetTInjection(sid: uintq, iti: bool);
 }
 extern "C" {
+    pub fn SetStabilizerWeakSampling(sid: uintq, sws: bool);
+}
+extern "C" {
     pub fn TimeEvolve(
         sid: uintq,
         t: f64,
@@ -621,7 +631,7 @@ extern "C" {
     pub fn qneuron_learn_permutation(nid: uintq, eta: f64, e: bool, r: bool);
 }
 extern "C" {
-    pub fn init_qcircuit() -> uintq;
+    pub fn init_qcircuit(collapse: bool) -> uintq;
 }
 extern "C" {
     pub fn init_qcircuit_clone(cid: uintq) -> uintq;

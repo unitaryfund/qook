@@ -46,6 +46,8 @@ MICROSOFT_QUANTUM_DECL uintq init_clone(_In_ uintq sid);
 MICROSOFT_QUANTUM_DECL void destroy(_In_ uintq sid);
 MICROSOFT_QUANTUM_DECL void seed(_In_ uintq sid, _In_ uintq s);
 MICROSOFT_QUANTUM_DECL void set_concurrency(_In_ uintq sid, _In_ uintq p);
+MICROSOFT_QUANTUM_DECL void qstabilizer_out_to_file(_In_ uintq sid, _In_ char* f);
+MICROSOFT_QUANTUM_DECL void qstabilizer_in_from_file(_In_ uintq sid, _In_ char* f);
 
 // pseudo-quantum
 MICROSOFT_QUANTUM_DECL double Prob(_In_ uintq sid, _In_ uintq q);
@@ -236,6 +238,7 @@ MICROSOFT_QUANTUM_DECL void ResetUnitaryFidelity(_In_ uintq sid);
 MICROSOFT_QUANTUM_DECL void SetSdrp(_In_ uintq sid, _In_ double sdrp);
 MICROSOFT_QUANTUM_DECL void SetReactiveSeparate(_In_ uintq sid, _In_ bool irs);
 MICROSOFT_QUANTUM_DECL void SetTInjection(_In_ uintq sid, _In_ bool iti);
+MICROSOFT_QUANTUM_DECL void SetStabilizerWeakSampling(_In_ uintq sid, _In_ bool sws);
 
 #if !(FPPOW < 6 && !ENABLE_COMPLEX_X2)
 MICROSOFT_QUANTUM_DECL void TimeEvolve(_In_ uintq sid, _In_ double t, _In_ uintq n,
@@ -269,7 +272,7 @@ MICROSOFT_QUANTUM_DECL double qneuron_learn_cycle(_In_ uintq nid, _In_ bool e);
 MICROSOFT_QUANTUM_DECL void qneuron_learn(_In_ uintq nid, _In_ double eta, _In_ bool e, _In_ bool r);
 MICROSOFT_QUANTUM_DECL void qneuron_learn_permutation(_In_ uintq nid, _In_ double eta, _In_ bool e, _In_ bool r);
 
-MICROSOFT_QUANTUM_DECL uintq init_qcircuit();
+MICROSOFT_QUANTUM_DECL uintq init_qcircuit(_In_ bool collapse);
 MICROSOFT_QUANTUM_DECL uintq init_qcircuit_clone(_In_ uintq cid);
 MICROSOFT_QUANTUM_DECL void destroy_qcircuit(_In_ uintq cid);
 MICROSOFT_QUANTUM_DECL uintq get_qcircuit_qubit_count(_In_ uintq cid);
