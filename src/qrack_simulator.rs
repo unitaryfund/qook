@@ -46,6 +46,7 @@ impl QrackSimulator {
         return Ok(Self{ sid });
     }
     pub fn new_layers(qubit_count: u64,
+        is_tensor_network: bool,
         is_schmidt_decompose_multi: bool,
         is_schmidt_decompose: bool,
         is_stabilizer_hybrid: bool,
@@ -56,7 +57,8 @@ impl QrackSimulator {
         is_host_pointer: bool) -> Result<Self, QrackError> {
 
         let sid;
-        if is_schmidt_decompose
+        if is_tensor_network
+            && is_schmidt_decompose
             && is_stabilizer_hybrid
             && !is_binary_decision_tree
             && is_paged
@@ -74,6 +76,7 @@ impl QrackSimulator {
         } else {
             unsafe {
                 sid = qrack_system::init_count_type(qubit_count,
+                                                              is_tensor_network,
                                                               is_schmidt_decompose_multi,
                                                               is_schmidt_decompose,
                                                               is_stabilizer_hybrid,
@@ -2465,24 +2468,6 @@ impl QrackSimulator {
 
         unsafe {
             qrack_system::SetReactiveSeparate(self.sid, irs);
-        }
-        self.check_error()
-    }
-
-    pub fn set_weak_sampling(&self, sws: bool) -> Result<(), QrackError> {
-        // Set reactive separation option
-        //
-        // If reactive separation is available, then this method turns it off/on.
-        // Note that reactive separation is on by default.
-        //
-        // Args:
-        //     irs(bool): on/off for aggressive separation
-        //
-        // Raises:
-        //     RuntimeError: QrackSimulator raised an exception.
-
-        unsafe {
-            qrack_system::SetStabilizerWeakSampling(self.sid, sws);
         }
         self.check_error()
     }

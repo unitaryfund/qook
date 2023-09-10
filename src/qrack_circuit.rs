@@ -67,6 +67,27 @@ impl QrackCircuit {
         }
     }
 
+    pub fn inverse(&self) -> QrackCircuit {
+        let cid;
+        unsafe {
+            cid = qrack_system::qcircuit_inverse(self.cid);
+        }
+        Self{
+            cid
+        }
+    }
+
+    pub fn past_light_cone(&self, q: Vec<u64>) -> QrackCircuit {
+        let cid;
+        let mut _q = q.to_vec();
+        unsafe {
+            cid = qrack_system::qcircuit_past_light_cone(self.cid, _q.len() as u64, _q.as_mut_ptr());
+        }
+        Self{
+            cid
+        }
+    }
+
     pub fn swap(&self, q1: u64, q2: u64) -> () {
         // Add a 'Swap' gate to the circuit
         //

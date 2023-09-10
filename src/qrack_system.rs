@@ -78,6 +78,7 @@ extern "C" {
 extern "C" {
     pub fn init_count_type(
         q: uintq,
+        tn: bool,
         md: bool,
         sd: bool,
         sh: bool,
@@ -120,10 +121,50 @@ extern "C" {
     pub fn Prob(sid: uintq, q: uintq) -> f64;
 }
 extern "C" {
+    pub fn ProbRdm(sid: uintq, q: uintq) -> f64;
+}
+extern "C" {
     pub fn PermutationProb(sid: uintq, n: uintq, q: *mut uintq, c: *mut bool) -> f64;
 }
 extern "C" {
-    pub fn PermutationExpectation(sid: uintq, n: uintq, c: *mut uintq) -> f64;
+    pub fn PermutationProbRdm(sid: uintq, n: uintq, q: *mut uintq, c: *mut bool, r: bool) -> f64;
+}
+extern "C" {
+    pub fn PermutationExpectation(sid: uintq, n: uintq, q: *mut uintq) -> f64;
+}
+extern "C" {
+    pub fn PermutationExpectationRdm(sid: uintq, n: uintq, q: *mut uintq, r: bool) -> f64;
+}
+extern "C" {
+    pub fn FactorizedExpectation(
+        sid: uintq,
+        n: uintq,
+        q: *mut uintq,
+        m: uintq,
+        c: *mut uintq,
+    ) -> f64;
+}
+extern "C" {
+    pub fn FactorizedExpectationRdm(
+        sid: uintq,
+        n: uintq,
+        q: *mut uintq,
+        m: uintq,
+        c: *mut uintq,
+        r: bool,
+    ) -> f64;
+}
+extern "C" {
+    pub fn FactorizedExpectationFp(sid: uintq, n: uintq, q: *mut uintq, c: *mut f32) -> f64;
+}
+extern "C" {
+    pub fn FactorizedExpectationFpRdm(
+        sid: uintq,
+        n: uintq,
+        q: *mut uintq,
+        c: *mut f32,
+        r: bool,
+    ) -> f64;
 }
 extern "C" {
     pub fn DumpIds(sid: uintq, callback: IdCallback);
@@ -568,9 +609,6 @@ extern "C" {
     pub fn SetTInjection(sid: uintq, iti: bool);
 }
 extern "C" {
-    pub fn SetStabilizerWeakSampling(sid: uintq, sws: bool);
-}
-extern "C" {
     pub fn TimeEvolve(
         sid: uintq,
         t: f64,
@@ -635,6 +673,12 @@ extern "C" {
 }
 extern "C" {
     pub fn init_qcircuit_clone(cid: uintq) -> uintq;
+}
+extern "C" {
+    pub fn qcircuit_inverse(cid: uintq) -> uintq;
+}
+extern "C" {
+    pub fn qcircuit_past_light_cone(cid: uintq, n: uintq, q: *mut uintq) -> uintq;
 }
 extern "C" {
     pub fn destroy_qcircuit(cid: uintq);
