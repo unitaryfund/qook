@@ -13,7 +13,7 @@ links = "qrack_pinvoke"
 build = "src/build.rs"
 
 [build-dependencies]
-bindgen = "0.69.4"
+bindgen = "0.53.1"
 
 [lib]
 name = "qook"          # The name of the target.
