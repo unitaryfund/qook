@@ -26,7 +26,7 @@ typedef unsigned long long uintq;
 typedef void (*IdCallback)(uintq);
 typedef bool (*ProbAmpCallback)(size_t, double, double);
 
-#if !(FPPOW < 6 && !ENABLE_COMPLEX_X2)
+#if !(FPPOW < 6 && !defined(ENABLE_COMPLEX_X2))
 struct _QrackTimeEvolveOpHeader;
 #endif
 
@@ -50,6 +50,14 @@ MICROSOFT_QUANTUM_DECL void qstabilizer_out_to_file(_In_ uintq sid, _In_ char* f
 MICROSOFT_QUANTUM_DECL void qstabilizer_in_from_file(_In_ uintq sid, _In_ char* f);
 
 // pseudo-quantum
+#if FPPOW < 6
+MICROSOFT_QUANTUM_DECL void ProbAll(_In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* q, float* p);
+#elif FPPOW < 7
+MICROSOFT_QUANTUM_DECL void ProbAll(_In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* q, double* p);
+#else
+MICROSOFT_QUANTUM_DECL void ProbAll(_In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* q, boost::multiprecision::float128* p);
+#endif
+MICROSOFT_QUANTUM_DECL double Variance(_In_ uintq sid, _In_ uintq n, _In_reads_(n) uintq* q);
 MICROSOFT_QUANTUM_DECL double Prob(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL double ProbRdm(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL double PermutationProb(
@@ -111,8 +119,12 @@ MICROSOFT_QUANTUM_DECL void Y(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void Z(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void H(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void S(_In_ uintq sid, _In_ uintq q);
+MICROSOFT_QUANTUM_DECL void SX(_In_ uintq sid, _In_ uintq q);
+MICROSOFT_QUANTUM_DECL void SY(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void T(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void AdjS(_In_ uintq sid, _In_ uintq q);
+MICROSOFT_QUANTUM_DECL void AdjSX(_In_ uintq sid, _In_ uintq q);
+MICROSOFT_QUANTUM_DECL void AdjSY(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void AdjT(_In_ uintq sid, _In_ uintq q);
 MICROSOFT_QUANTUM_DECL void U(_In_ uintq sid, _In_ uintq q, _In_ double theta, _In_ double phi, _In_ double lambda);
 MICROSOFT_QUANTUM_DECL void Mtrx(_In_ uintq sid, _In_reads_(8) double* m, _In_ uintq q);
@@ -259,10 +271,11 @@ MICROSOFT_QUANTUM_DECL bool TrySeparateTol(_In_ uintq sid, _In_ uintq n, _In_rea
 MICROSOFT_QUANTUM_DECL double GetUnitaryFidelity(_In_ uintq sid);
 MICROSOFT_QUANTUM_DECL void ResetUnitaryFidelity(_In_ uintq sid);
 MICROSOFT_QUANTUM_DECL void SetSdrp(_In_ uintq sid, _In_ double sdrp);
+MICROSOFT_QUANTUM_DECL void SetNcrp(_In_ uintq sid, _In_ double ncrp);
 MICROSOFT_QUANTUM_DECL void SetReactiveSeparate(_In_ uintq sid, _In_ bool irs);
 MICROSOFT_QUANTUM_DECL void SetTInjection(_In_ uintq sid, _In_ bool iti);
 
-#if !(FPPOW < 6 && !ENABLE_COMPLEX_X2)
+#if !(FPPOW < 6 && !defined(ENABLE_COMPLEX_X2))
 MICROSOFT_QUANTUM_DECL void TimeEvolve(_In_ uintq sid, _In_ double t, _In_ uintq n,
     _In_reads_(n) _QrackTimeEvolveOpHeader* teos, uintq mn, _In_reads_(mn) double* mtrx);
 #endif
@@ -294,7 +307,7 @@ MICROSOFT_QUANTUM_DECL double qneuron_learn_cycle(_In_ uintq nid, _In_ bool e);
 MICROSOFT_QUANTUM_DECL void qneuron_learn(_In_ uintq nid, _In_ double eta, _In_ bool e, _In_ bool r);
 MICROSOFT_QUANTUM_DECL void qneuron_learn_permutation(_In_ uintq nid, _In_ double eta, _In_ bool e, _In_ bool r);
 
-MICROSOFT_QUANTUM_DECL uintq init_qcircuit(_In_ bool collapse);
+MICROSOFT_QUANTUM_DECL uintq init_qcircuit(_In_ bool collapse, _In_ bool clifford);
 MICROSOFT_QUANTUM_DECL uintq init_qcircuit_clone(_In_ uintq cid);
 MICROSOFT_QUANTUM_DECL uintq qcircuit_inverse(_In_ uintq cid);
 MICROSOFT_QUANTUM_DECL uintq qcircuit_past_light_cone(_In_ uintq cid, _In_ uintq n, _In_reads_(n) uintq* q);
