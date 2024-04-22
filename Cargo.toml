@@ -9,11 +9,11 @@ homepage = "https://github.com/unitaryfund/qook"
 repository = "https://github.com/unitaryfund/qook"
 keywords = ["quantum", "qrack", "gpu", "hpc", "c++"]
 categories = ["api-bindings", "emulators", "science", "simulation"]
-links = "qrack_invoke"
+links = "qrack_pinvoke"
 build = "src/build.rs"
 
 [build-dependencies]
-bindgen = "0.69.4"
+bindgen = "0.53.1"
 
 [lib]
 name = "qook"          # The name of the target.

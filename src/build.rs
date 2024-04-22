@@ -17,7 +17,7 @@ fn main() {
         .header("include/pinvoke_api.hpp")
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         // Finish the builder and generate the bindings.A
         .generate()
         // Unwrap the Result and panic on failure.
