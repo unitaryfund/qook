@@ -2573,7 +2573,7 @@ impl QrackSimulator {
         //     Expectation value
 
         // Ensure the length of `q` and `c` are appropriate
-        if (3 * q.len()) != b.len() {
+        if (q.len() << 2) != b.len() {
             return Err(QrackError{});
         }
         if (q.len() << 1) != e.len() {
@@ -2634,9 +2634,9 @@ impl QrackSimulator {
     }
 
     pub fn variance(&self, q: Vec<u64>) -> Result<f64, QrackError> {
-        // Pauli tensor product expectation value
+        // Pauli tensor product variance
         //
-        // Get the Pauli tensor product expectation value,
+        // Get the Pauli tensor product variance,
         // where each entry in "b" is a Pauli observable for
         // corresponding "q", as the product for each in "q".
         //
@@ -2648,7 +2648,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
         //
         // Returns:
-        //     Expectation value
+        //     Variance
 
         let mut _q = q.to_vec();
 
@@ -2666,9 +2666,9 @@ impl QrackSimulator {
     }
 
     pub fn variance_rdm(&self, q: Vec<u64>, r: bool) -> Result<f64, QrackError> {
-        // Pauli tensor product expectation value
+        // Pauli tensor product variance
         //
-        // Get the Pauli tensor product expectation value,
+        // Get the Pauli tensor product variance,
         // where each entry in "b" is a Pauli observable for
         // corresponding "q", as the product for each in "q".
         //
@@ -2680,7 +2680,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
         //
         // Returns:
-        //     Expectation value
+        //     Variance
 
         let mut _q = q.to_vec();
 
@@ -2698,10 +2698,10 @@ impl QrackSimulator {
     }
 
     pub fn factorized_variance(&self, q: Vec<u64>, c: Vec<u64>) -> Result<f64, QrackError> {
-        // Factorized expectation value
+        // Factorized variance
         //
-        // Get the factorized expectation value, where each entry
-        // in "c" is an expectation value for corresponding "q"
+        // Get the factorized variance, where each entry
+        // in "c" is an variance for corresponding "q"
         // being false, then true, repeated for each in "q".
         //
         // Args:
@@ -2712,7 +2712,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
         //
         // Returns:
-        //     Expectation value
+        //     Variance
 
         // Ensure the length of `q` and `c` are appropriate
         let m = (c.len() >> 1) / q.len();
@@ -2736,10 +2736,10 @@ impl QrackSimulator {
     }
 
     pub fn factorized_variance_rdm(&self, q: Vec<u64>, c: Vec<u64>, r: bool) -> Result<f64, QrackError> {
-        // Factorized expectation value
+        // Factorized variance
         //
-        // Get the factorized expectation value, where each entry
-        // in "c" is an expectation value for corresponding "q"
+        // Get the factorized variance, where each entry
+        // in "c" is an variance for corresponding "q"
         // being false, then true, repeated for each in "q".
         //
         // Args:
@@ -2750,7 +2750,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
         //
         // Returns:
-        //     Expectation value
+        //     Variance
 
         // Ensure the length of `q` and `c` are appropriate
         let m = (c.len() >> 1) / q.len();
@@ -2764,6 +2764,43 @@ impl QrackSimulator {
         let result:f64;
         unsafe {
             result = qrack_system::FactorizedVarianceRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), m as u64, _c.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_variance_fp(&self, q: Vec<u64>, c: Vec<Float>) -> Result<f64, QrackError> {
+        // Factorized variance (floating point)
+        //
+        // Get the factorized variance, where each entry
+        // in "c" is an variance for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Variance
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 1) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedVarianceFp(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr())
         };
 
         if self.get_error() != 0 {
@@ -2788,7 +2825,7 @@ impl QrackSimulator {
         //     RuntimeError: QrackSimulator raised an exception.
         //
         // Returns:
-        //     variance
+        //     Variance
 
         // Ensure the length of `q` and `c` are appropriate
         if (q.len() << 1) != c.len() {
@@ -2801,6 +2838,197 @@ impl QrackSimulator {
         let result:f64;
         unsafe {
             result = qrack_system::FactorizedVarianceFpRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn unitary_variance(&self, q: Vec<u64>, b: Vec<Float>) -> Result<f64, QrackError> {
+        // 3-parameter unitary tensor product variance
+        //
+        // Get the single-qubit (3-parameter) operator
+        // variance for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 3-parameter, single-qubit, unitary bases (flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Variance
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (3 * q.len()) != b.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::UnitaryVariance(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn matrix_variance(&self, q: Vec<u64>, b: Vec<Float>) -> Result<f64, QrackError> {
+        // 3-parameter unitary tensor product variance
+        //
+        // Get the single-qubit (3-parameter) operator
+        // variance for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 3-parameter, single-qubit, unitary bases (flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Variance
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 2) != b.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::MatrixVariance(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn unitary_variance_eigenval(&self, q: Vec<u64>, b: Vec<Float>, e: Vec<Float>) -> Result<f64, QrackError> {
+        // 3-parameter unitary tensor product variance
+        //
+        // Get the single-qubit (3-parameter) operator
+        // variance for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 3-parameter, single-qubit, unitary bases (flat over wires)
+        //     e: arbitrary variance (in pairs, flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Variance value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (3 * q.len()) != b.len() {
+            return Err(QrackError{});
+        }
+        if (q.len() << 1) != e.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+        let mut _e = e.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::UnitaryVarianceEigenVal(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr(), _e.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn matrix_variance_eigenval(&self, q: Vec<u64>, b: Vec<Float>, e: Vec<Float>) -> Result<f64, QrackError> {
+        // 2x2 unitary tensor product variance
+        //
+        // Get the single-qubit (3-parameter) operator
+        // variance for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 2x2, single-qubit, unitary bases (flat over wires)
+        //     e: arbitrary variance (in pairs, flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Variance value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 2) != b.len() {
+            return Err(QrackError{});
+        }
+        if (q.len() << 1) != e.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+        let mut _e = e.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::MatrixVarianceEigenVal(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr(), _e.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn pauli_variance(&self, q: Vec<u64>, b: Vec<Pauli>) -> Result<f64, QrackError> {
+        // Pauli tensor product variance
+        //
+        // Get the Pauli tensor product variance,
+        // where each entry in "b" is a Pauli observable for
+        // corresponding "q", as the product for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: qubit Pauli bases
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Variance value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if q.len() != b.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::PauliVariance(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr() as *mut u64)
         };
 
         if self.get_error() != 0 {
