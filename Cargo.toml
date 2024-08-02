@@ -23,3 +23,8 @@ doctest = false        # Documentation examples are tested by default.
 bench = false          # Is benchmarked by default.
 doc = false            # Is documented by default.
 crate-type = ["lib"]   # The crate types to generate.
+
+[features]
+default = ["use_f32"]
+use_f32 = []
+use_f64 = []

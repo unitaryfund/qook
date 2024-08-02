@@ -7,6 +7,12 @@ use pauli::Pauli;
 use qrack_error::QrackError;
 use qrack_system;
 
+#[cfg(feature = "use_f32")]
+type Float = f32;
+
+#[cfg(feature = "use_f64")]
+type Float = f64;
+
 pub struct QrackSimulator {
     // Interface for all the QRack functionality.
     //
@@ -2134,7 +2140,7 @@ impl QrackSimulator {
         self.check_error()
     }
 
-    // pub fn in_ket(&self, ket: *mut f32) -> Result<(), QrackError> {
+    pub fn in_ket(&self, ket: *mut Float) -> Result<(), QrackError> {
         // Set state vector
         //
         // Set state vector for the selected simulator ID.
@@ -2152,13 +2158,13 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: Not implemented for the given builds.
 
-    //     unsafe {
-    //         qrack_system::InKet(self.sid, ket);
-    //     }
-    //     self.check_error()
-    // }
+        unsafe {
+           qrack_system::InKet(self.sid, ket);
+        }
+        self.check_error()
+    }
 
-    // pub fn out_ket(self, ket: *mut f32) -> Result<(), QrackError> {
+    pub fn out_ket(self, ket: *mut Float) -> Result<(), QrackError> {
         // Get state vector
         //
         // Returns the raw state vector of the simulator.
@@ -2172,11 +2178,11 @@ impl QrackSimulator {
         // Raises:
         //     RuntimeError: Not implemented for the given builds.
 
-    //     unsafe {
-    //         qrack_system::OutKet(self.sid, ket);
-    //     }
-    //     self.check_error()
-    // }
+        unsafe {
+           qrack_system::OutKet(self.sid, ket);
+        }
+        self.check_error()
+    }
 
     pub fn prob_perm(&self, q: Vec<u64>, c: Vec<bool>) -> Result<f64, QrackError> {
         // Probability of permutation
@@ -2257,6 +2263,550 @@ impl QrackSimulator {
         if self.get_error() != 0 {
             return Err(QrackError{});
         }
+        Ok(result)
+    }
+
+    pub fn permutation_expectation_rdm(&self, c: Vec<u64>, r:bool) -> Result<f64, QrackError> {
+        // Permutation expectation value
+        //
+        // Get the permutation expectation value, based upon the order of
+        // input qubits.
+        //
+        // Args:
+        //     c(Vec<u64>): permutation (as u64 words, low-to-high)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        let mut _c = c.to_vec();
+        let result:f64;
+        unsafe {
+            result = qrack_system::PermutationExpectationRdm(self.sid, _c.len() as u64, _c.as_mut_ptr(), r);
+        }
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+        Ok(result)
+    }
+
+    pub fn factorized_expectation(&self, q: Vec<u64>, c: Vec<u64>) -> Result<f64, QrackError> {
+        // Factorized expectation value
+        //
+        // Get the factorized expectation value, where each entry
+        // in "c" is an expectation value for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        let m = (c.len() >> 1) / q.len();
+        if (q.len() * m) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedExpectation(self.sid, _q.len() as u64, _q.as_mut_ptr(), m as u64, _c.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_expectation_rdm(&self, q: Vec<u64>, c: Vec<u64>, r: bool) -> Result<f64, QrackError> {
+        // Factorized expectation value
+        //
+        // Get the factorized expectation value, where each entry
+        // in "c" is an expectation value for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        let m = (c.len() >> 1) / q.len();
+        if (q.len() * m) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedExpectationRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), m as u64, _c.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_expectation_fp(&self, q: Vec<u64>, c: Vec<Float>) -> Result<f64, QrackError> {
+        // Factorized expectation value
+        //
+        // Get the factorized expectation value, where each entry
+        // in "c" is an expectation value for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 1) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedExpectationFp(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_expectation_fp_rdm(&self, q: Vec<u64>, c: Vec<Float>, r: bool) -> Result<f64, QrackError> {
+        // Factorized expectation value
+        //
+        // Get the factorized expectation value, where each entry
+        // in "c" is an expectation value for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 1) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedExpectationFpRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn unitary_expectation(&self, q: Vec<u64>, c: Vec<Float>) -> Result<f64, QrackError> {
+        // 3-parameter unitary tensor product expectation value
+        //
+        // Get the single-qubit (3-parameter) operator
+        // expectation value for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 3-parameter, single-qubit, unitary bases (flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (3 * q.len()) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::UnitaryExpectation(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn matrix_expectation(&self, q: Vec<u64>, b: Vec<Float>) -> Result<f64, QrackError> {
+        // Single-qubit operator tensor product expectation value
+        //
+        // Get the single-qubit (3-parameter) operator
+        // expectation value for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: single-qubit (2x2) operator unitary bases (flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 2) != b.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::MatrixExpectation(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn unitary_expectation_eigenval(&self, q: Vec<u64>, b: Vec<Float>, e: Vec<Float>) -> Result<f64, QrackError> {
+        // 3-parameter unitary tensor product expectation value
+        //
+        // Get the single-qubit (3-parameter) operator
+        // expectation value for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 3-parameter, single-qubit, unitary bases (flat over wires)
+        //     e: arbitrary expectation values (in pairs, flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (3 * q.len()) != b.len() {
+            return Err(QrackError{});
+        }
+        if (q.len() << 1) != e.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+        let mut _e = e.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::UnitaryExpectationEigenVal(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr(), _e.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn matrix_expectation_eigenval(&self, q: Vec<u64>, b: Vec<Float>, e: Vec<Float>) -> Result<f64, QrackError> {
+        // 2x2 unitary tensor product expectation value
+        //
+        // Get the single-qubit (3-parameter) operator
+        // expectation value for the array of qubits and bases.
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: 2x2, single-qubit, unitary bases (flat over wires)
+        //     e: arbitrary expectation values (in pairs, flat over wires)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (3 * q.len()) != b.len() {
+            return Err(QrackError{});
+        }
+        if (q.len() << 1) != e.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+        let mut _e = e.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::MatrixExpectationEigenVal(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr(), _e.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn pauli_expectation(&self, q: Vec<u64>, b: Vec<Pauli>) -> Result<f64, QrackError> {
+        // Pauli tensor product expectation value
+        //
+        // Get the Pauli tensor product expectation value,
+        // where each entry in "b" is a Pauli observable for
+        // corresponding "q", as the product for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: qubit Pauli bases
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        if q.len() != b.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _b = b.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::PauliExpectation(self.sid, _q.len() as u64, _q.as_mut_ptr(), _b.as_mut_ptr() as *mut u64)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn variance(&self, q: Vec<u64>) -> Result<f64, QrackError> {
+        // Pauli tensor product expectation value
+        //
+        // Get the Pauli tensor product expectation value,
+        // where each entry in "b" is a Pauli observable for
+        // corresponding "q", as the product for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: qubit Pauli bases
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        let mut _q = q.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::Variance(self.sid, _q.len() as u64, _q.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn variance_rdm(&self, q: Vec<u64>, r: bool) -> Result<f64, QrackError> {
+        // Pauli tensor product expectation value
+        //
+        // Get the Pauli tensor product expectation value,
+        // where each entry in "b" is a Pauli observable for
+        // corresponding "q", as the product for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     b: qubit Pauli bases
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        let mut _q = q.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::VarianceRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_variance(&self, q: Vec<u64>, c: Vec<u64>) -> Result<f64, QrackError> {
+        // Factorized expectation value
+        //
+        // Get the factorized expectation value, where each entry
+        // in "c" is an expectation value for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        let m = (c.len() >> 1) / q.len();
+        if (q.len() * m) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedVariance(self.sid, _q.len() as u64, _q.as_mut_ptr(), m as u64, _c.as_mut_ptr())
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_variance_rdm(&self, q: Vec<u64>, c: Vec<u64>, r: bool) -> Result<f64, QrackError> {
+        // Factorized expectation value
+        //
+        // Get the factorized expectation value, where each entry
+        // in "c" is an expectation value for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     Expectation value
+
+        // Ensure the length of `q` and `c` are appropriate
+        let m = (c.len() >> 1) / q.len();
+        if (q.len() * m) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedVarianceRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), m as u64, _c.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
+        Ok(result)
+    }
+
+    pub fn factorized_variance_fp_rdm(&self, q: Vec<u64>, c: Vec<Float>, r: bool) -> Result<f64, QrackError> {
+        // Factorized variance (floating point, reduced density matrix)
+        //
+        // Get the factorized variance, where each entry
+        // in "c" is an variance for corresponding "q"
+        // being false, then true, repeated for each in "q".
+        //
+        // Args:
+        //     q: qubits, from low to high
+        //     c: qubit falsey/truthy values, from low to high
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+        //
+        // Returns:
+        //     variance
+
+        // Ensure the length of `q` and `c` are appropriate
+        if (q.len() << 1) != c.len() {
+            return Err(QrackError{});
+        }
+        let mut _q = q.to_vec();
+        let mut _c = c.to_vec();
+
+        // Call the Qrack library function
+        let result:f64;
+        unsafe {
+            result = qrack_system::FactorizedVarianceFpRdm(self.sid, _q.len() as u64, _q.as_mut_ptr(), _c.as_mut_ptr(), r)
+        };
+
+        if self.get_error() != 0 {
+            return Err(QrackError{});
+        }
+
         Ok(result)
     }
 

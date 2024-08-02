@@ -8,6 +8,12 @@ use qrack_error::QrackError;
 use qrack_simulator::QrackSimulator;
 use qrack_system;
 
+#[cfg(feature = "use_f32")]
+type Float = f32;
+
+#[cfg(feature = "use_f64")]
+type Float = f64;
+
 pub struct QrackNeuron<'a> {
     // Class that exposes the QNeuron class of Qrack
     //
@@ -126,7 +132,7 @@ impl QrackNeuron<'_> {
         self.simulator
     }
 
-    pub fn set_angles(&self, a: Vec<f32>) -> Result<(), QrackError> {
+    pub fn set_angles(&self, a: Vec<Float>) -> Result<(), QrackError> {
         // Directly sets the neuron parameters.
         //
         // Set all synaptic parameters of the neuron directly, by a list
@@ -145,7 +151,7 @@ impl QrackNeuron<'_> {
         self.check_error()
     }
 
-    pub fn get_angles(&self) -> Result<Vec<f32>, QrackError> {
+    pub fn get_angles(&self) -> Result<Vec<Float>, QrackError> {
         // Directly gets the neuron parameters.
         //
         // Get all synaptic parameters of the neuron directly, as a list
