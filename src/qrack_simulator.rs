@@ -2267,13 +2267,14 @@ impl QrackSimulator {
     }
 
     pub fn permutation_expectation_rdm(&self, c: Vec<u64>, r:bool) -> Result<f64, QrackError> {
-        // Permutation expectation value
+        // Permutation expectation value (reduced density matrix)
         //
         // Get the permutation expectation value, based upon the order of
         // input qubits.
         //
         // Args:
         //     c(Vec<u64>): permutation (as u64 words, low-to-high)
+        //     r(bool): rounding on/off (true/false)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2300,8 +2301,8 @@ impl QrackSimulator {
         // being false, then true, repeated for each in "q".
         //
         // Args:
-        //     q: qubits, from low to high
-        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //     q(Vec<u64>): qubits, from low to high
+        //     c(Vec<u64>): permutation (as u64 words, low-to-high)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2331,15 +2332,16 @@ impl QrackSimulator {
     }
 
     pub fn factorized_expectation_rdm(&self, q: Vec<u64>, c: Vec<u64>, r: bool) -> Result<f64, QrackError> {
-        // Factorized expectation value
+        // Factorized expectation value (reduced density matrix)
         //
         // Get the factorized expectation value, where each entry
         // in "c" is an expectation value for corresponding "q"
         // being false, then true, repeated for each in "q".
         //
         // Args:
-        //     q: qubits, from low to high
-        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //     q(Vec<u64>): qubits, from low to high
+        //     c(Vec<u64>): permutation (as u64 words, low-to-high)
+        //     r(bool): rounding on/off (true/false)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2369,7 +2371,7 @@ impl QrackSimulator {
     }
 
     pub fn factorized_expectation_fp(&self, q: Vec<u64>, c: Vec<Float>) -> Result<f64, QrackError> {
-        // Factorized expectation value
+        // Factorized expectation value (floating-point)
         //
         // Get the factorized expectation value, where each entry
         // in "c" is an expectation value for corresponding "q"
@@ -2377,7 +2379,7 @@ impl QrackSimulator {
         //
         // Args:
         //     q: qubits, from low to high
-        //     c: qubit falsey/truthy values, from low to high
+        //     c: per-qubit |0>/|1> expecation values, from low-to-high over qubits
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2406,7 +2408,7 @@ impl QrackSimulator {
     }
 
     pub fn factorized_expectation_fp_rdm(&self, q: Vec<u64>, c: Vec<Float>, r: bool) -> Result<f64, QrackError> {
-        // Factorized expectation value
+        // Factorized expectation value (floating-point, reduced density matrix)
         //
         // Get the factorized expectation value, where each entry
         // in "c" is an expectation value for corresponding "q"
@@ -2414,7 +2416,7 @@ impl QrackSimulator {
         //
         // Args:
         //     q: qubits, from low to high
-        //     c: qubit falsey/truthy values, from low to high
+        //     c: per-qubit |0>/|1> expecation values, from low-to-high over qubits
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2486,7 +2488,7 @@ impl QrackSimulator {
         //
         // Args:
         //     q: qubits, from low to high
-        //     b: single-qubit (2x2) operator unitary bases (flat over wires)
+        //     b: 2x2(x2), single-qubit, unitary bases (flat over wires)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2495,7 +2497,7 @@ impl QrackSimulator {
         //     Expectation value
 
         // Ensure the length of `q` and `c` are appropriate
-        if (q.len() << 2) != b.len() {
+        if (q.len() << 3) != b.len() {
             return Err(QrackError{});
         }
         let mut _q = q.to_vec();
@@ -2563,7 +2565,7 @@ impl QrackSimulator {
         //
         // Args:
         //     q: qubits, from low to high
-        //     b: 2x2, single-qubit, unitary bases (flat over wires)
+        //     b: 2x2(x2), single-qubit, unitary bases (flat over wires)
         //     e: arbitrary expectation values (in pairs, flat over wires)
         //
         // Raises:
@@ -2573,7 +2575,7 @@ impl QrackSimulator {
         //     Expectation value
 
         // Ensure the length of `q` and `c` are appropriate
-        if (q.len() << 2) != b.len() {
+        if (q.len() << 3) != b.len() {
             return Err(QrackError{});
         }
         if (q.len() << 1) != e.len() {
@@ -2715,7 +2717,7 @@ impl QrackSimulator {
         //     Variance
 
         // Ensure the length of `q` and `c` are appropriate
-        let m = (c.len() >> 1) / q.len();
+        let m = c.len() / (q.len() << 1);
         if (q.len() * m) != c.len() {
             return Err(QrackError{});
         }
@@ -2743,8 +2745,9 @@ impl QrackSimulator {
         // being false, then true, repeated for each in "q".
         //
         // Args:
-        //     q: qubits, from low to high
-        //     c: qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //     q(Vec<u64>): qubits, from low to high
+        //     c(Vec<u64>): qubit falsey/truthy values, from low to high (in 64-bit segments)
+        //     r(bool): rounding on/off (true/false)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2753,7 +2756,7 @@ impl QrackSimulator {
         //     Variance
 
         // Ensure the length of `q` and `c` are appropriate
-        let m = (c.len() >> 1) / q.len();
+        let m = c.len() / (q.len() << 1);
         if (q.len() * m) != c.len() {
             return Err(QrackError{});
         }
@@ -2818,8 +2821,9 @@ impl QrackSimulator {
         // being false, then true, repeated for each in "q".
         //
         // Args:
-        //     q: qubits, from low to high
-        //     c: qubit falsey/truthy values, from low to high
+        //     q(Vec<u64>): qubits, from low to high
+        //     c(Vec<Float>): qubit falsey/truthy values, from low to high
+        //     r(bool): rounding on/off (true/false)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2891,7 +2895,7 @@ impl QrackSimulator {
         //
         // Args:
         //     q: qubits, from low to high
-        //     b: 3-parameter, single-qubit, unitary bases (flat over wires)
+        //     b: 2x2(x2), single-qubit, unitary bases (flat over wires)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2900,7 +2904,7 @@ impl QrackSimulator {
         //     Variance
 
         // Ensure the length of `q` and `c` are appropriate
-        if (q.len() << 2) != b.len() {
+        if (q.len() << 3) != b.len() {
             return Err(QrackError{});
         }
         let mut _q = q.to_vec();
@@ -2968,8 +2972,8 @@ impl QrackSimulator {
         //
         // Args:
         //     q: qubits, from low to high
-        //     b: 2x2, single-qubit, unitary bases (flat over wires)
-        //     e: arbitrary variance (in pairs, flat over wires)
+        //     b: b: 2x2(x2), single-qubit, unitary bases (flat over wires)
+        //     e: arbitrary eigen values (in pairs, flat over wires)
         //
         // Raises:
         //     RuntimeError: QrackSimulator raised an exception.
@@ -2978,7 +2982,7 @@ impl QrackSimulator {
         //     Variance value
 
         // Ensure the length of `q` and `c` are appropriate
-        if (q.len() << 2) != b.len() {
+        if (q.len() << 3) != b.len() {
             return Err(QrackError{});
         }
         if (q.len() << 1) != e.len() {
