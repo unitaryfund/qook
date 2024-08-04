@@ -60,7 +60,8 @@ impl QrackSimulator {
         is_paged: bool,
         is_cpu_gpu_hybrid: bool,
         is_opencl: bool,
-        is_host_pointer: bool) -> Result<Self, QrackError> {
+        is_host_pointer: bool,
+        is_noisy: bool) -> Result<Self, QrackError> {
 
         let sid;
         if is_tensor_network
@@ -88,7 +89,7 @@ impl QrackSimulator {
                                                               is_stabilizer_hybrid,
                                                               is_binary_decision_tree,
                                                               is_paged,
-                                                              false,
+                                                              is_noisy,
                                                               is_cpu_gpu_hybrid,
                                                               is_opencl,
                                                               is_host_pointer);
