@@ -2185,6 +2185,23 @@ impl QrackSimulator {
         self.check_error()
     }
 
+    pub fn out_probs(self, ket: *mut Float) -> Result<(), QrackError> {
+        // Get basis state dimension probabilities
+        //
+        // Returns the probabilities of each dimension in the raw state vector.
+        //
+        // Args:
+        //     ket(*mut f32): the array to which probabilities will be output
+        //
+        // Raises:
+        //     RuntimeError: Not implemented for the given builds.
+
+        unsafe {
+           qrack_system::OutProbs(self.sid, ket);
+        }
+        self.check_error()
+    }
+
     pub fn prob_perm(&self, q: Vec<u64>, c: Vec<bool>) -> Result<f64, QrackError> {
         // Probability of permutation
         //
