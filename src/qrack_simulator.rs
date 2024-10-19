@@ -3187,6 +3187,24 @@ impl QrackSimulator {
         Ok(result)
     }
 
+    pub fn separate(&self, qs: Vec<u64>) -> Result<(), QrackError> {
+        // Force manual multi-qubits seperation
+        //
+        // Force separation as per `try_separate_tolerance`.
+        //
+        // Args:
+        //     qs: list of qubits to be decomposed
+        //
+        // Raises:
+        //     Runtimeerror: QrackSimulator raised an exception.
+
+        let mut _qs = qs.to_vec();
+        unsafe {
+            qrack_system::Separate(self.sid, _qs.len() as u64, _qs.as_mut_ptr());
+        }
+        self.check_error()
+    }
+
     pub fn get_unitary_fidelity(&self) -> Result<f64, QrackError> {
         // Get fidelity estimate
         //
@@ -3286,6 +3304,41 @@ impl QrackSimulator {
 
         unsafe {
             qrack_system::SetTInjection(self.sid, iti);
+        }
+        self.check_error()
+    }
+
+    pub fn set_noise_parameter(self, np: f64) -> Result<(), QrackError> {
+        // Set noise parameter option
+        //
+        // If noisy simulation is on, then this set the depolarization
+        // parameter per qubit per gate. (Default is 0.01.)
+        //
+        // Args:
+        //     np(f64): depolarizing noise parameter
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::SetNoiseParameter(self.sid, np);
+        }
+        self.check_error()
+    }
+
+    pub fn normalize(self) -> Result<(), QrackError> {
+        // Normalize the state
+        //
+        // This should never be necessary to use unless
+        // decompose() is "abused." ("Abusing" decompose()
+        // might lead to efficient entanglement-breaking
+        // channels, though.)
+        //
+        // Raises:
+        //     RuntimeError: QrackSimulator raised an exception.
+
+        unsafe {
+            qrack_system::Normalize(self.sid);
         }
         self.check_error()
     }
