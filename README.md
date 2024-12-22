@@ -5,6 +5,8 @@ Pure language standard, "safe" Rust bindings for the pure C++11/OpenCL Qrack qua
 
 To use this package, it's helpful to be familiar with [unitaryfund/qrack](https://github.com/unitaryfund/qrack). Users gain **much** more control over options by building **unitaryfund/qrack** from source.
 
+**Performance can benefit greatly from following the [Qrack repository "Quick Start" and "Power user considerations."](https://github.com/unitaryfund/qrack/blob/main/README.md#quick-start)**
+
 You must install the Qrack library in order to use this library crate. (See the [Qrack releases page](https://github.com/unitaryfund/qrack/releases) for details.) `cargo` will dynamically link [`qook`](https://github.com/unitaryfund/qook) against your system installation of Qrack.
 
 Import and instantiate [`QrackSimulator`](https://github.com/unitaryfund/qook/blob/main/src/qrack_simulator.rs) instances. This simulator can perform arbitrary single qubit and controlled-single-qubit gates, as well as other specific gates like `SWAP`.
